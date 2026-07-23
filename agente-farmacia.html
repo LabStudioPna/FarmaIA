@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Agente farmacéutico con IA: calculá copagos, revisá interacciones y alergias, validá recetas y vademécum, llevá trazabilidad ANMAT y comparás genéricos. Tus datos siempre en tu navegador.">
+<title>FarmaIA — Agente Farmacéutico</title>
+<meta name="theme-color" content="#0D9488">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script src="tracker.js" defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0D9488;--brand-dark:#0F3B37;--brand-light:#14B8A6;
+  --accent:#F59E0B;--accent-light:#FBBF24;
+  --bg:#F7FAF9;--bg-alt:#EEF5F3;--card:#FFFFFF;
+  --text:#132422;--muted:#5B6F6B;--border:#DCE8E5;
+  --ok:#0D9488;--warn:#B0872E;--bad:#C0392B;
+  --shadow:0 2px 6px rgba(19,36,34,.05),0 14px 34px rgba(19,36,34,.09);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0B1615;--bg-alt:#111F1D;--card:#152825;
+  --text:#EAF3F1;--muted:#9FB3AF;--border:#26403C;
+  --shadow:0 2px 6px rgba(0,0,0,.25),0 14px 34px rgba(0,0,0,.4);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;transition:background .25s,color .25s}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2}
+button{font-family:var(--sans)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+header.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:20px;text-decoration:none;color:var(--text)}
+.brand img{width:32px;height:32px;border-radius:9px}
+.brand em{font-style:italic;color:var(--accent)}
+.topbar .right{margin-left:auto;display:flex;gap:9px;align-items:center}
+.icon-btn{background:var(--bg-alt);border:1px solid var(--border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:15px}
+.top-link{font-size:13px;color:var(--muted);text-decoration:none}
+.top-link:hover{color:var(--text)}
+
+.tab-row{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 4px}
+.tab-btn{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:9px 15px;font-size:13.5px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+.tab-btn:hover{color:var(--text);border-color:var(--brand-light)}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,.28)}
+
+.keybox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:18px 0 26px;display:flex;gap:12px;align-items:end;flex-wrap:wrap;box-shadow:var(--shadow)}
+.keybox .f{flex:1;min-width:220px}
+.keybox label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+.keybox input,.keybox select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans)}
+.keybox .hint{font-size:11.5px;color:var(--muted);width:100%}
+.keybox .hint a{color:var(--accent)}
+
+.panel{display:none}
+.panel.active{display:block}
+.panel h2{font-size:24px;margin-bottom:6px}
+.sub{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:640px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14.5px;font-family:var(--sans)}
+.field textarea{resize:vertical;min-height:70px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand-light)}
+.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:transform .15s,box-shadow .15s}
+.btn-brand{background:var(--brand);color:#fff;box-shadow:0 3px 8px rgba(13,148,136,.22),0 10px 24px rgba(13,148,136,.26)}
+.btn-brand:hover{transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--brand);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--brand-light)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+.dropzone{border:2px dashed var(--border);border-radius:14px;padding:34px 16px;text-align:center;cursor:pointer;color:var(--muted);font-size:14px;transition:all .2s}
+.dropzone:hover{border-color:var(--brand-light);background:var(--bg-alt)}
+.dropzone.small{padding:18px 12px;font-size:13px}
+
+table.data{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:14px}
+table.data th{text-align:left;padding:9px 10px;border-bottom:2px solid var(--border);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+table.data td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+table.data tr:hover td{background:var(--bg-alt)}
+.del{background:none;border:none;color:var(--bad);cursor:pointer;font-size:14px}
+.empty{font-size:13.5px;color:var(--muted);padding:18px 6px;text-align:center}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+.pill.ok{background:rgba(13,148,136,.14);color:var(--ok)}
+.pill.warn{background:rgba(176,135,46,.14);color:var(--warn)}
+.pill.bad{background:rgba(192,57,43,.14);color:var(--bad)}
+.pill.info{background:rgba(245,158,11,.14);color:var(--accent)}
+.result-box{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-top:14px;font-size:14px}
+.result-box .big{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--brand)}
+.row-mini{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--border)}
+.row-mini:last-child{border-bottom:none}
+.hallazgo{border-left:3px solid var(--border);padding:8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;background:var(--card);font-size:13.5px}
+.hallazgo.alto{border-color:var(--bad)}
+.hallazgo.medio{border-color:var(--warn)}
+.hallazgo.bajo,.hallazgo.ninguno{border-color:var(--ok)}
+.disclaimer{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.55}
+.loading{display:inline-flex;gap:4px;align-items:center}
+.loading span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bnc 1.2s ease-in-out infinite}
+.loading span:nth-child(2){animation-delay:.2s}.loading span:nth-child(3){animation-delay:.4s}
+@keyframes bnc{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}
+
+/* Chat */
+.chat-box{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;height:560px}
+.chat-msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.cmsg{max-width:82%;padding:12px 15px;border-radius:14px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.cmsg.user{background:var(--bg-alt);align-self:flex-end;border-bottom-right-radius:5px}
+.cmsg.ai{background:var(--brand);color:#fff;align-self:flex-start;border-bottom-left-radius:5px}
+.cmsg.ai b{color:#F0FDFA}
+.chat-input-row{border-top:1px solid var(--border);padding:12px;display:flex;gap:8px;align-items:end}
+.chat-input-row textarea{flex:1;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);resize:none;min-height:44px;max-height:120px}
+.attach-btn{background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:16px;flex-shrink:0}
+.attach-pill{font-size:12px;color:var(--muted);padding:0 12px 8px}
+
+@media(max-width:640px){
+  .tab-btn{padding:8px 11px;font-size:12px}
+  .panel h2{font-size:20px}
+  .chat-box{height:70vh}
+  .cmsg{max-width:92%}
+  .card{padding:16px}
+  table.data{font-size:12px}
+  table.data td,table.data th{padding:7px 6px}
+}
+/* Login */
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:44px 36px;max-width:420px;width:100%;text-align:center}
+.login-card img{width:56px;height:56px;border-radius:14px;margin-bottom:16px;box-shadow:0 4px 12px rgba(19,36,34,.2)}
+.login-card h1{font-family:var(--serif);font-size:26px;margin-bottom:6px}
+.login-card h1 em{font-style:italic;color:var(--accent)}
+.login-card .sub{font-size:14px;color:var(--muted);margin-bottom:26px;line-height:1.6}
+#google-signin-btn{display:flex;justify-content:center;margin-bottom:14px;min-height:44px}
+#login-status{font-size:13px;color:var(--muted);min-height:18px}
+.login-note{font-size:12px;color:var(--muted);margin-top:18px;border-top:1px dashed var(--border);padding-top:14px;line-height:1.6}
+.user-chip{position:fixed;bottom:14px;right:14px;z-index:60;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--muted);box-shadow:var(--shadow);display:none;align-items:center;gap:10px}
+.user-chip b{color:var(--text);font-weight:600}
+.user-chip button{background:none;border:none;color:var(--bad);cursor:pointer;font-size:12px;font-family:var(--sans)}
+.lab-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;text-align:left}
+.lab-pill{background:var(--bg-alt);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:12px;color:var(--muted)}
+.lab-paso{text-align:left;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.lab-key-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:monospace}
+.lab-enter-btn{width:100%;margin-top:18px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity .2s}
+.lab-enter-btn:disabled{opacity:.45;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card" id="loginCard">
+    <img src="favicon-192.png" alt="FarmaIA">
+    <h1>Farma<em>IA</em></h1>
+    <p class="sub">Tu asistente farmacéutico con IA.<br>Copagos, interacciones, recetas y trazabilidad en un solo lugar.</p>
+    <div class="lab-pills">
+      <div class="lab-pill">💊 Cálculo de copago</div>
+      <div class="lab-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Interacciones y alergias</div>
+      <div class="lab-pill">📋 Validación de receta</div>
+      <div class="lab-pill">🔎 Comparador de genéricos</div>
+    </div>
+    <p class="lab-paso">Paso 1 — Identificate con Google</p>
+    <div id="google-signin-btn"></div>
+    <p id="login-status"></p>
+    <p class="lab-paso">Paso 2 — Tu API key de Anthropic</p>
+    <input type="password" class="lab-key-input" id="labKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+    <p style="text-align:left;font-size:12px;color:var(--muted);margin-top:8px;">Obtené tu key gratis en <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);">console.anthropic.com</a> →</p>
+    <button class="lab-enter-btn" id="labEnterBtn" disabled>Ingresar al agente →</button>
+    <p class="login-note">🎁 <b>5 días de prueba gratis</b> con acceso completo. 🔒 <b>Tu privacidad:</b> la API key se guarda solo en tu navegador y se borra al cerrar la pestaña. Este sitio no tiene backend ni registra tus datos.</p>
+  </div>
+  <div class="login-card" id="trialCard" style="display:none;">
+    <img src="favicon-192.png" alt="FarmaIA">
+    <h1>Tu prueba terminó</h1>
+    <p class="sub">Los 5 días de prueba gratuita de FarmaIA llegaron a su fin. Para seguir usándolo con onboarding y soporte por WhatsApp, pasate al Plan Farmacia.</p>
+    <a class="btn btn-brand" style="width:100%;justify-content:center;text-decoration:none;" href="https://wa.me/5493435344597?text=Hola,%20se%20me%20venci%C3%B3%20la%20prueba%20de%20FarmaIA%20y%20quiero%20contratar%20el%20Plan%20Farmacia">Contratar por WhatsApp →</a>
+    <div style="margin-top:18px; padding-top:16px; border-top:1px dashed var(--border);">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:8px;">¿Ya tenés tu código de acceso? Ingresalo acá</p>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="labAccessCodeInput" placeholder="Código de acceso" autocomplete="off" class="lab-key-input" style="font-family:inherit;">
+        <button id="labAccessCodeBtn" style="background:var(--accent); color:#1F2937; border:none; border-radius:10px; padding:0 16px; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap;">Desbloquear</button>
+      </div>
+      <p id="labAccessCodeStatus" style="font-size:12px; margin-top:8px; min-height:16px;"></p>
+    </div>
+    <p class="login-note">¿Creés que es un error? Escribinos por el mismo WhatsApp y lo revisamos.</p>
+  </div>
+</div>
+
+<div class="user-chip" id="userChip"><span id="userChipText"></span><button id="logoutBtn">Salir</button></div>
+
+<header class="top">
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="favicon-192.png" alt=""> Farma<em>IA</em></a>
+    <div class="right">
+      <a href="guia-completa.html" class="top-link">Guía</a>
+      <button class="icon-btn" id="themeToggle" title="Cambiar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Chat</button>
+    <button class="tab-btn" data-tab="copago"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><rect x="2.5" y="9.5" width="19" height="5" rx="2.5" transform="rotate(-45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>Copago</button>
+    <button class="tab-btn" data-tab="interacciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Interacciones</button>
+    <button class="tab-btn" data-tab="receta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>Receta y vademécum</button>
+    <button class="tab-btn" data-tab="trazabilidad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Trazabilidad ANMAT</button>
+    <button class="tab-btn" data-tab="genericos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Genéricos</button>
+  </div>
+
+  <div class="keybox">
+    <div class="f">
+      <label for="apiKeyInput">Tu API key de Anthropic</label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+    <div class="f" style="max-width:280px;">
+      <label for="modelSelect">Modelo</label>
+      <select id="modelSelect">
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (rápido y económico)</option>
+        <option value="claude-sonnet-5">Claude Sonnet 5 (casos complejos)</option>
+      </select>
+    </div>
+    <p class="hint">Se guarda solo en tu navegador y se borra al cerrar la pestaña. La generás gratis en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.</p>
+  </div>
+
+  <!-- CHAT -->
+  <section class="panel active" id="panel-chat">
+    <div class="chat-box">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="cmsg ai"><b>FarmaIA:</b> Hola 💊 Preguntame sobre dosis, interacciones, vademécum, normativa de dispensa o adjuntá una receta y la reviso en la conversación.</div>
+      </div>
+      <div class="attach-pill" id="attachPill" style="display:none;"></div>
+      <div class="chat-input-row">
+        <button class="attach-btn" id="attachBtn" title="Adjuntar PDF o imagen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <input type="file" id="chatFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
+        <textarea id="chatInput" placeholder="Ej: ¿ibuprofeno y losartán interactúan?"></textarea>
+        <button class="btn btn-brand" id="chatSendBtn">Enviar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- COPAGO -->
+  <section class="panel" id="panel-copago">
+    <h2>💊 Cálculo de copago</h2>
+    <p class="sub">Calculá cuánto paga el paciente según el precio de venta y el % de cobertura de su obra social o prepaga.</p>
+    <div class="card">
+      <div class="grid-form">
+        <div class="field" style="margin-bottom:0;">
+          <label>Precio de venta al público (PVP)</label>
+          <input type="number" id="cpPvp" placeholder="15000" min="0" step="0.01">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Cobertura</label>
+          <select id="cpPreset">
+            <option value="0">Particular / sin cobertura (0%)</option>
+            <option value="40">Obra social sindical — agudo (40%)</option>
+            <option value="70" selected>Obra social / prepaga — crónico (70%)</option>
+            <option value="50">Prepaga — plan estándar (50%)</option>
+            <option value="100">Discapacidad / oncológico — ley especial (100%)</option>
+            <option value="manual">Otro % (ingresar manual)</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;" id="cpManualWrap" hidden>
+          <label>% de cobertura manual</label>
+          <input type="number" id="cpManual" placeholder="60" min="0" max="100">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Cantidad de unidades</label>
+          <input type="number" id="cpCantidad" value="1" min="1">
+        </div>
+        <div class="field" style="margin-bottom:0;display:flex;align-items:end;">
+          <button class="btn btn-brand" id="cpCalcBtn" style="width:100%;">Calcular copago</button>
+        </div>
+      </div>
+      <div class="result-box" id="cpResult" style="display:none;"></div>
+    </div>
+    <p class="disclaimer">⚠️ Los porcentajes de cobertura son orientativos — cada obra social, prepaga y medicamento (por vademécum o PMO) puede tener un % distinto. Verificá siempre el descuento real en el sistema de tu droguería/obra social antes de cobrar.</p>
+  </section>
+
+  <!-- INTERACCIONES -->
+  <section class="panel" id="panel-interacciones">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Interacciones, alergias y duplicidad</h2>
+    <p class="sub">Cargá la medicación actual del paciente y lo que vas a dispensar. La IA revisa interacciones, alergias declaradas y duplicidad terapéutica.</p>
+    <div class="card">
+      <div class="field">
+        <label>Medicación actual del paciente (una por línea)</label>
+        <textarea id="itActual" placeholder="Ej: Losartán 50mg 1x día&#10;Metformina 850mg 2x día"></textarea>
+      </div>
+      <div class="field">
+        <label>Medicamento a dispensar</label>
+        <input type="text" id="itNuevo" placeholder="Ej: Ibuprofeno 400mg">
+      </div>
+      <div class="field">
+        <label>Alergias conocidas (opcional)</label>
+        <input type="text" id="itAlergias" placeholder="Ej: penicilina, sulfas">
+      </div>
+      <button class="btn btn-brand" id="itAnalizarBtn">Analizar</button>
+    </div>
+    <div id="itResult"></div>
+    <p class="disclaimer">⚠️ Análisis generado por IA como apoyo — no reemplaza el criterio del farmacéutico ni consultar al médico prescriptor ante cualquier duda.</p>
+  </section>
+
+  <!-- RECETA Y VADEMÉCUM -->
+  <section class="panel" id="panel-receta">
+    <h2>📋 Validación de receta y vademécum</h2>
+    <p class="sub">Subí o pegá el texto de una receta para chequear que esté completa, o buscá un medicamento en el vademécum.</p>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:10px;">Validar receta</h3>
+      <div class="dropzone" id="rcDrop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Hacé click para subir la receta, o arrastrala acá<br><span style="font-size:12px;">PDF, JPG o PNG</span></div>
+      <input type="file" id="rcFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
+      <div class="field" style="margin-top:14px;">
+        <label>O pegá el texto de la receta</label>
+        <textarea id="rcTexto" placeholder="Ej: Dr. Juan Pérez, M.P. 12345 — Paciente: María López, DNI 30111222 — Amoxicilina 500mg cada 8hs x 7 días — Fecha: 20/07/2026"></textarea>
+      </div>
+      <button class="btn btn-brand" id="rcValidarBtn">Validar receta</button>
+    </div>
+    <div id="rcResult"></div>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:10px;">Buscar en vademécum</h3>
+      <div class="grid-form">
+        <div class="field" style="margin-bottom:0;"><label>Medicamento o principio activo</label><input type="text" id="vdNombre" placeholder="Ej: Atorvastatina"></div>
+        <div class="field" style="margin-bottom:0;display:flex;align-items:end;"><button class="btn btn-ghost" id="vdBuscarBtn" style="width:100%;">Buscar</button></div>
+      </div>
+      <div id="vdResult"></div>
+    </div>
+    <p class="disclaimer">⚠️ Validación y vademécum generados por IA a modo orientativo — confirmá siempre dosis y contraindicaciones con el vademécum oficial (Kairos/Alfabeta) o el prospecto vigente.</p>
+  </section>
+
+  <!-- TRAZABILIDAD ANMAT -->
+  <section class="panel" id="panel-trazabilidad">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Trazabilidad ANMAT</h2>
+    <p class="sub">Llevá tu propio registro de medicamentos trazados dispensados (GTIN, lote, vencimiento) y consultá si un medicamento requiere trazabilidad obligatoria.</p>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:10px;">¿Requiere trazabilidad obligatoria?</h3>
+      <div class="grid-form">
+        <div class="field" style="margin-bottom:0;"><label>Medicamento</label><input type="text" id="tzConsulta" placeholder="Ej: Metotrexato"></div>
+        <div class="field" style="margin-bottom:0;display:flex;align-items:end;"><button class="btn btn-ghost" id="tzConsultarBtn" style="width:100%;">Consultar</button></div>
+      </div>
+      <div id="tzConsultaResult"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px;">Registrar dispensa trazada</h3>
+      <div class="grid-form">
+        <div class="field" style="margin-bottom:0;"><label>Medicamento</label><input type="text" id="tzMed" placeholder="Nombre comercial"></div>
+        <div class="field" style="margin-bottom:0;"><label>GTIN (código de barras)</label><input type="text" id="tzGtin" placeholder="7791234567890"></div>
+        <div class="field" style="margin-bottom:0;"><label>Lote</label><input type="text" id="tzLote" placeholder="L12345"></div>
+        <div class="field" style="margin-bottom:0;"><label>Vencimiento</label><input type="month" id="tzVenc"></div>
+        <div class="field" style="margin-bottom:0;"><label>Cantidad</label><input type="number" id="tzCant" value="1" min="1"></div>
+        <div class="field" style="margin-bottom:0;display:flex;align-items:end;"><button class="btn btn-brand" id="tzAddBtn" style="width:100%;">+ Registrar</button></div>
+      </div>
+    </div>
+    <table class="data" id="tzTable">
+      <thead><tr><th>Fecha</th><th>Medicamento</th><th>GTIN</th><th>Lote</th><th>Vence</th><th>Cant.</th><th></th></tr></thead>
+      <tbody id="tzBody"></tbody>
+    </table>
+    <div class="empty" id="tzEmpty">Todavía no registraste ninguna dispensa trazada.</div>
+    <p class="disclaimer">⚠️ Este registro es un respaldo local de tu farmacia — no reemplaza la carga obligatoria en el Sistema Nacional de Trazabilidad (SNT) de ANMAT. Verificá siempre el listado oficial de medicamentos trazados vigente.</p>
+  </section>
+
+  <!-- GENÉRICOS -->
+  <section class="panel" id="panel-genericos">
+    <h2>🔎 Comparador de genéricos</h2>
+    <p class="sub">Ingresá una marca comercial o principio activo y encontrá alternativas con el mismo principio activo.</p>
+    <div class="card">
+      <div class="grid-form">
+        <div class="field" style="margin-bottom:0;"><label>Marca comercial o principio activo</label><input type="text" id="gnNombre" placeholder="Ej: Lipitor / Atorvastatina"></div>
+        <div class="field" style="margin-bottom:0;display:flex;align-items:end;"><button class="btn btn-brand" id="gnBuscarBtn" style="width:100%;">Buscar alternativas</button></div>
+      </div>
+    </div>
+    <div id="gnResult"></div>
+    <p class="disclaimer">⚠️ Lista orientativa generada por IA — no incluye precios (varían por droguería y día) ni stock. Confirmá bioequivalencia y disponibilidad real antes de sugerir el cambio al paciente.</p>
+  </section>
+
+</div>
+
+<script>
+/* ---------- Login con Google ---------- */
+const LAB_AUTH_URL = 'https://vps-6064485-x.dattaweb.com/webhook/labstudio-auth';
+const LAB_AUTH_PROXY = 'https://vps-6064485-x.dattaweb.com/webhook/labstudio-auth-proxy';
+const LAB_CLIENT_ID = '770326349307-rv1uf77479oc8ejrsh3hmhkieqgous2o.apps.googleusercontent.com';
+const LAB_PRODUCTO = 'farmaia';
+const LAB_USER_KEY = 'farmaia_user';
+const LAB_ACCESS_CODE_KEY = 'labstudio_access_code_farmaia';
+let labUserData = null;
+async function labValidarCodigoAcceso(){
+  const input = document.getElementById('labAccessCodeInput');
+  const statusEl = document.getElementById('labAccessCodeStatus');
+  const btn = document.getElementById('labAccessCodeBtn');
+  const code = input.value.trim();
+  if (!code){ statusEl.textContent = 'Ingresá tu código de acceso.'; statusEl.style.color = '#c0392b'; return; }
+  btn.disabled = true;
+  statusEl.textContent = 'Verificando…';
+  statusEl.style.color = 'var(--muted)';
+  try{
+    const res = await fetch(LAB_AUTH_PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ access_token: code, product: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (!res.ok || data.error){
+      const motivos = { token_invalido:'Código inválido. Verificalo o escribinos por WhatsApp.', cuenta_suspendida:'Tu cuenta está suspendida. Escribinos por WhatsApp.', limite_alcanzado:'Alcanzaste el límite mensual. Escribinos por WhatsApp.' };
+      statusEl.textContent = motivos[data.motivo] || 'Código inválido o vencido.';
+      statusEl.style.color = '#c0392b';
+      btn.disabled = false;
+      return;
+    }
+    localStorage.setItem(LAB_ACCESS_CODE_KEY, code);
+    statusEl.textContent = '✅ Acceso desbloqueado. ¡Bienvenido!';
+    statusEl.style.color = 'var(--brand)';
+    setTimeout(()=>{
+      document.getElementById('loginOverlay').style.display = 'none';
+    }, 700);
+  }catch(e){
+    statusEl.textContent = '⚠️ No se pudo verificar. Probá de nuevo.';
+    statusEl.style.color = '#c0392b';
+    btn.disabled = false;
+    console.error('Error validando código de acceso:', e);
+  }
+}
+async function labVerificarCodigoGuardado(){
+  const code = localStorage.getItem(LAB_ACCESS_CODE_KEY);
+  if (!code) return;
+  try{
+    const res = await fetch(LAB_AUTH_PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ access_token: code, product: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (res.ok && !data.error){
+      document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+      localStorage.removeItem(LAB_ACCESS_CODE_KEY);
+    }
+  }catch(e){ /* sin conexión: se revalida en el próximo intento */ }
+}
+function labMostrarSesion(data){
+  const overlay = document.getElementById('loginOverlay');
+  const chip = document.getElementById('userChip');
+  if (data.plan === 'gratis' && data.trialExpirado){
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('trialCard').style.display = 'block';
+    overlay.style.display = 'flex';
+    chip.style.display = 'none';
+    labVerificarCodigoGuardado();
+    return;
+  }
+  overlay.style.display = 'none';
+  chip.style.display = 'flex';
+  const plan = data.plan === 'gratis'
+    ? (typeof data.diasRestantes === 'number' ? 'Prueba · '+(data.diasRestantes <= 0 ? 'último día' : data.diasRestantes+' día'+(data.diasRestantes===1?'':'s')) : 'Prueba')
+    : 'Plan '+data.plan.charAt(0).toUpperCase()+data.plan.slice(1);
+  document.getElementById('userChipText').innerHTML = '<b>'+data.nombre+'</b> · '+plan;
+}
+async function labManejarLogin(response){
+  const st = document.getElementById('login-status');
+  st.textContent = 'Verificando…';
+  try{
+    const res = await fetch(LAB_AUTH_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ idToken: response.credential, producto: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Error');
+    localStorage.setItem(LAB_USER_KEY, JSON.stringify(data));
+    labUserData = data;
+    if (data.plan === 'gratis' && data.trialExpirado){ labMostrarSesion(data); return; }
+    st.textContent = data.esNuevo ? '✅ ¡Cuenta creada, '+data.nombre+'! Completá el paso 2 y entrá.' : '✅ ¡Hola de nuevo, '+data.nombre+'!';
+    document.getElementById('labEnterBtn').disabled = false;
+  }catch(e){
+    st.textContent = '⚠️ No se pudo verificar el ingreso. Probá de nuevo.';
+    console.error('Login:', e);
+  }
+}
+function labInitLogin(){
+  if (typeof google === 'undefined' || !google.accounts || !google.accounts.id){ setTimeout(labInitLogin, 300); return; }
+  google.accounts.id.initialize({ client_id: LAB_CLIENT_ID, callback: labManejarLogin });
+  const btn = document.getElementById('google-signin-btn');
+  if (btn) google.accounts.id.renderButton(btn, { theme:'outline', size:'large', text:'continue_with', width: 300 });
+}
+document.getElementById('labEnterBtn').addEventListener('click', ()=>{
+  const k = document.getElementById('labKeyInput').value.trim();
+  if (k){
+    sessionStorage.setItem('farmaia_api_key', k);
+    const appInput = document.getElementById('apiKeyInput');
+    if (appInput){ appInput.value = k; appInput.dispatchEvent(new Event('input')); }
+  }
+  if (labUserData) labMostrarSesion(labUserData);
+});
+document.getElementById('labAccessCodeBtn').addEventListener('click', labValidarCodigoAcceso);
+document.getElementById('labAccessCodeInput').addEventListener('keydown', (e)=>{ if (e.key==='Enter') labValidarCodigoAcceso(); });
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem(LAB_USER_KEY);
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('trialCard').style.display = 'none';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('login-status').textContent = '';
+  document.getElementById('labEnterBtn').disabled = true;
+});
+(function(){
+  const savedKey = sessionStorage.getItem('farmaia_api_key');
+  if (savedKey) document.getElementById('labKeyInput').value = savedKey;
+  const saved = localStorage.getItem(LAB_USER_KEY);
+  if (saved){ try{ labMostrarSesion(JSON.parse(saved)); }catch(e){} }
+  labInitLogin();
+})();
+
+/* ---------- Estado y helpers ---------- */
+const $ = id => document.getElementById(id);
+const modelSelect = $('modelSelect');
+const fmt = n => '$' + Number(n||0).toLocaleString('es-AR',{maximumFractionDigits:2});
+
+const savedTheme = localStorage.getItem('farmaia_theme') || 'light';
+if (savedTheme==='dark') document.documentElement.setAttribute('data-theme','dark');
+$('themeToggle').innerHTML = savedTheme==='dark' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+$('themeToggle').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme')==='dark' ? 'dark':'light';
+  const next = cur==='dark' ? 'light':'dark';
+  if (next==='dark') document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+  localStorage.setItem('farmaia_theme', next);
+  $('themeToggle').innerHTML = next==='dark' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+});
+
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $('panel-'+b.dataset.tab).classList.add('active');
+}));
+
+$('apiKeyInput').value = sessionStorage.getItem('farmaia_api_key') || '';
+$('apiKeyInput').addEventListener('input', e => sessionStorage.setItem('farmaia_api_key', e.target.value.trim()));
+const getApiKey = () => sessionStorage.getItem('farmaia_api_key') || $('apiKeyInput').value.trim();
+
+async function callClaude(messages, systemPrompt, maxTokens = 1500){
+  const key = getApiKey();
+  if (!key) throw new Error('NO_KEY');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'content-type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({ model: modelSelect.value, max_tokens: maxTokens, system: systemPrompt, messages })
+  });
+  if (!res.ok){ const t = await res.text(); throw new Error('API_ERROR: '+res.status+' '+t); }
+  const data = await res.json();
+  return (data.content||[]).map(c=>c.text||'').join('\n');
+}
+function errMsg(e){
+  if (e.message==='NO_KEY') return '⚠️ Cargá tu API key de Anthropic arriba para usar la IA.';
+  if (e.message.includes('401')) return '⚠️ API key inválida. Revisala en console.anthropic.com.';
+  if (e.message.includes('429')) return '⚠️ Límite de uso alcanzado. Esperá un momento o revisá tu crédito.';
+  return '⚠️ Error al consultar la IA: '+e.message.slice(0,140);
+}
+function parseJson(text){
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('Sin JSON en la respuesta');
+  return JSON.parse(m[0]);
+}
+function parseJsonArray(text){
+  const m = text.match(/\[[\s\S]*\]/);
+  if (!m) throw new Error('Sin JSON en la respuesta');
+  return JSON.parse(m[0]);
+}
+async function fileToBase64(file){
+  return new Promise((ok,err)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=err; r.readAsDataURL(file); });
+}
+async function pdfToText(file){
+  const buf = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+  let out='';
+  for (let i=1;i<=Math.min(pdf.numPages,15);i++){
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    out += tc.items.map(it=>it.str).join(' ')+'\n';
+  }
+  return out.trim();
+}
+async function buildFileBlock(file){
+  if (file.type==='application/pdf'){
+    const text = await pdfToText(file);
+    if (text.length > 40) return { type:'text', text:'[Contenido del PDF adjunto "'+file.name+'"]:\n'+text.slice(0,30000) };
+    const b64 = await fileToBase64(file);
+    return { type:'document', source:{ type:'base64', media_type:'application/pdf', data:b64 } };
+  }
+  const b64 = await fileToBase64(file);
+  return { type:'image', source:{ type:'base64', media_type:file.type, data:b64 } };
+}
+
+/* ---------- Chat ---------- */
+const SYSTEM_CHAT = `Sos el asistente farmacéutico de FarmaIA, para farmacéuticos y auxiliares de farmacia en Argentina. Ayudás con: dosis y posología, interacciones y contraindicaciones, vademécum, normativa de dispensa (psicotrópicos, antibióticos, venta bajo receta archivada), trazabilidad ANMAT y equivalencias genéricas. Respondé en español rioplatense, claro y al grano. Si te adjuntan una receta o etiqueta, analizala. Aclarás siempre que tus respuestas son de apoyo y no reemplazan el criterio profesional del farmacéutico ni la consulta al médico prescriptor ante dudas. Nunca inventás datos de vademécum que no sepas con certeza: si no estás seguro, decilo explícitamente.`;
+let chatHistory = [];
+let chatAttach = null;
+
+$('attachBtn').addEventListener('click', ()=>$('chatFile').click());
+$('chatFile').addEventListener('change', e => {
+  chatAttach = e.target.files[0] || null;
+  $('attachPill').style.display = chatAttach ? 'block':'none';
+  $('attachPill').textContent = chatAttach ? '📎 '+chatAttach.name+' — se enviará con tu próximo mensaje' : '';
+});
+function addMsg(cls, html){
+  const d = document.createElement('div');
+  d.className = 'cmsg '+cls;
+  d.innerHTML = html;
+  $('chatMsgs').appendChild(d);
+  $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
+  return d;
+}
+function mdLite(t){
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
+async function sendChat(){
+  const text = $('chatInput').value.trim();
+  if (!text && !chatAttach) return;
+  $('chatInput').value='';
+  addMsg('user', mdLite(text || '(archivo adjunto)'));
+  const content = [];
+  if (chatAttach){ try{ content.push(await buildFileBlock(chatAttach)); }catch(e){ addMsg('ai','⚠️ No pude leer el adjunto: '+e.message); } chatAttach=null; $('chatFile').value=''; $('attachPill').style.display='none'; }
+  content.push({ type:'text', text: text || 'Analizá el archivo adjunto.' });
+  chatHistory.push({ role:'user', content });
+  const loader = addMsg('ai','<span class="loading"><span></span><span></span><span></span></span>');
+  try{
+    const reply = await callClaude(chatHistory, SYSTEM_CHAT, 1500);
+    chatHistory.push({ role:'assistant', content: reply });
+    if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
+    loader.innerHTML = '<b>FarmaIA:</b> '+mdLite(reply);
+  }catch(e){
+    chatHistory.pop();
+    loader.innerHTML = errMsg(e);
+  }
+}
+$('chatSendBtn').addEventListener('click', sendChat);
+$('chatInput').addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); } });
+
+/* ---------- Copago (cálculo local, sin IA) ---------- */
+$('cpPreset').addEventListener('change', () => {
+  $('cpManualWrap').hidden = $('cpPreset').value !== 'manual';
+});
+$('cpCalcBtn').addEventListener('click', () => {
+  const pvp = parseFloat($('cpPvp').value) || 0;
+  const cant = parseInt($('cpCantidad').value) || 1;
+  const preset = $('cpPreset').value;
+  const cobertura = preset === 'manual' ? (parseFloat($('cpManual').value) || 0) : parseFloat(preset);
+  const total = pvp * cant;
+  const copago = total * (1 - cobertura/100);
+  const cubreObraSocial = total - copago;
+  $('cpResult').style.display = 'block';
+  $('cpResult').innerHTML = `
+    <div class="big">${fmt(copago)}</div>
+    <div class="row-mini"><span>Precio total (${cant} unidad${cant===1?'':'es'})</span><span>${fmt(total)}</span></div>
+    <div class="row-mini"><span>Cobertura aplicada</span><span>${cobertura}%</span></div>
+    <div class="row-mini"><span>Cubre la obra social / prepaga</span><span>${fmt(cubreObraSocial)}</span></div>
+    <div class="row-mini"><span><b>Paga el paciente</b></span><span><b>${fmt(copago)}</b></span></div>
+  `;
+});
+
+/* ---------- Interacciones, alergias y duplicidad ---------- */
+$('itAnalizarBtn').addEventListener('click', async () => {
+  const actual = $('itActual').value.trim();
+  const nuevo = $('itNuevo').value.trim();
+  const alergias = $('itAlergias').value.trim();
+  if (!nuevo){ $('itResult').innerHTML = '<p class="disclaimer">Ingresá al menos el medicamento a dispensar.</p>'; return; }
+  $('itResult').innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+  const prompt = `Medicación actual del paciente:\n${actual || '(ninguna informada)'}\n\nMedicamento a dispensar: ${nuevo}\nAlergias conocidas: ${alergias || '(ninguna informada)'}\n\nAnalizá interacciones entre el medicamento a dispensar y la medicación actual, alergias cruzadas relevantes, y posible duplicidad terapéutica (mismo principio activo o misma clase). Respondé SOLO con un JSON con este formato exacto, sin texto extra:\n{"riesgo":"alto|medio|bajo|ninguno","hallazgos":[{"tipo":"interaccion|alergia|duplicidad","gravedad":"alto|medio|bajo","detalle":"texto breve"}],"recomendacion":"texto breve"}`;
+  try{
+    const reply = await callClaude([{ role:'user', content: prompt }], SYSTEM_CHAT, 1200);
+    const data = parseJson(reply);
+    const pillClass = data.riesgo === 'alto' ? 'bad' : data.riesgo === 'medio' ? 'warn' : 'ok';
+    let html = `<div class="card"><span class="pill ${pillClass}">Riesgo ${data.riesgo}</span>`;
+    if ((data.hallazgos||[]).length){
+      html += (data.hallazgos||[]).map(h => `<div class="hallazgo ${h.gravedad}"><b>${h.tipo}</b> (${h.gravedad}) — ${h.detalle}</div>`).join('');
+    } else {
+      html += '<div class="hallazgo ninguno">No se detectaron interacciones, alergias cruzadas ni duplicidad relevantes.</div>';
+    }
+    html += `<p style="margin-top:10px;font-size:13.5px;"><b>Recomendación:</b> ${data.recomendacion || '—'}</p></div>`;
+    $('itResult').innerHTML = html;
+  }catch(e){
+    $('itResult').innerHTML = `<p class="disclaimer">${errMsg(e)}</p>`;
+  }
+});
+
+/* ---------- Receta y vademécum ---------- */
+$('rcDrop').addEventListener('click', ()=>$('rcFile').click());
+let rcAttach = null;
+$('rcFile').addEventListener('change', e => {
+  rcAttach = e.target.files[0] || null;
+  $('rcDrop').innerHTML = rcAttach ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> '+rcAttach.name+' — click para cambiar' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Hacé click para subir la receta, o arrastrala acá';
+});
+$('rcValidarBtn').addEventListener('click', async () => {
+  const texto = $('rcTexto').value.trim();
+  if (!texto && !rcAttach){ $('rcResult').innerHTML = '<p class="disclaimer">Subí una receta o pegá su texto.</p>'; return; }
+  $('rcResult').innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+  const content = [];
+  if (rcAttach){ try{ content.push(await buildFileBlock(rcAttach)); }catch(e){} }
+  content.push({ type:'text', text: `${texto ? 'Texto de la receta:\n'+texto+'\n\n' : ''}Revisá esta receta y chequeá si tiene los elementos obligatorios (datos del médico y matrícula, datos del paciente, medicamento con dosis y cantidad, fecha, firma/sello), si la dosis indicada es razonable para ese medicamento, y si hay algo que la volvería inválida para dispensar. Respondé SOLO con un JSON con este formato exacto, sin texto extra:\n{"completa":true|false,"faltantes":["texto"],"observacionesDosis":"texto breve","valida":true|false,"motivoSiNoValida":"texto breve o vacío"}` });
+  try{
+    const reply = await callClaude([{ role:'user', content }], SYSTEM_CHAT, 1200);
+    const data = parseJson(reply);
+    const pillClass = data.valida ? 'ok' : 'bad';
+    let html = `<div class="card"><span class="pill ${pillClass}">${data.valida ? 'Receta válida' : 'Revisar receta'}</span>`;
+    if ((data.faltantes||[]).length) html += `<p style="margin-top:10px;font-size:13.5px;"><b>Faltantes:</b> ${data.faltantes.join(', ')}</p>`;
+    if (data.observacionesDosis) html += `<p style="margin-top:6px;font-size:13.5px;"><b>Dosis:</b> ${data.observacionesDosis}</p>`;
+    if (!data.valida && data.motivoSiNoValida) html += `<p style="margin-top:6px;font-size:13.5px;"><b>Motivo:</b> ${data.motivoSiNoValida}</p>`;
+    html += '</div>';
+    $('rcResult').innerHTML = html;
+  }catch(e){
+    $('rcResult').innerHTML = `<p class="disclaimer">${errMsg(e)}</p>`;
+  }
+});
+$('vdBuscarBtn').addEventListener('click', async () => {
+  const nombre = $('vdNombre').value.trim();
+  if (!nombre){ return; }
+  $('vdResult').innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+  const prompt = `Dame información de vademécum sobre "${nombre}" disponible en Argentina. Respondé SOLO con un JSON con este formato exacto, sin texto extra:\n{"principioActivo":"texto","accionTerapeutica":"texto","dosisHabitual":"texto","contraindicaciones":"texto","presentaciones":"texto"}`;
+  try{
+    const reply = await callClaude([{ role:'user', content: prompt }], SYSTEM_CHAT, 900);
+    const data = parseJson(reply);
+    $('vdResult').innerHTML = `
+      <div class="result-box">
+        <div class="row-mini"><span>Principio activo</span><span>${data.principioActivo||'—'}</span></div>
+        <div class="row-mini"><span>Acción terapéutica</span><span>${data.accionTerapeutica||'—'}</span></div>
+        <div class="row-mini"><span>Dosis habitual</span><span>${data.dosisHabitual||'—'}</span></div>
+        <div class="row-mini"><span>Contraindicaciones</span><span>${data.contraindicaciones||'—'}</span></div>
+        <div class="row-mini"><span>Presentaciones</span><span>${data.presentaciones||'—'}</span></div>
+      </div>`;
+  }catch(e){
+    $('vdResult').innerHTML = `<p class="disclaimer">${errMsg(e)}</p>`;
+  }
+});
+
+/* ---------- Trazabilidad ANMAT ---------- */
+$('tzConsultarBtn').addEventListener('click', async () => {
+  const med = $('tzConsulta').value.trim();
+  if (!med) return;
+  $('tzConsultaResult').innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+  const prompt = `¿El medicamento "${med}" suele requerir trazabilidad obligatoria en el Sistema Nacional de Trazabilidad de ANMAT en Argentina (por ejemplo por ser oncológico, hemoderivado, psicotrópico, de alto costo o estar en el listado de disposiciones ANMAT)? Respondé SOLO con un JSON con este formato exacto, sin texto extra:\n{"requiereTrazabilidad":"si|no|verificar","motivo":"texto breve"}`;
+  try{
+    const reply = await callClaude([{ role:'user', content: prompt }], SYSTEM_CHAT, 500);
+    const data = parseJson(reply);
+    const pillClass = data.requiereTrazabilidad === 'si' ? 'warn' : data.requiereTrazabilidad === 'no' ? 'ok' : 'info';
+    $('tzConsultaResult').innerHTML = `<div class="result-box"><span class="pill ${pillClass}">${data.requiereTrazabilidad === 'si' ? 'Requiere trazabilidad' : data.requiereTrazabilidad === 'no' ? 'No suele requerir' : 'Verificar caso a caso'}</span><p style="margin-top:8px;font-size:13.5px;">${data.motivo||''}</p></div>`;
+  }catch(e){
+    $('tzConsultaResult').innerHTML = `<p class="disclaimer">${errMsg(e)}</p>`;
+  }
+});
+
+function loadTz(){ try{ return JSON.parse(localStorage.getItem('farmaia_trazabilidad')||'[]'); }catch(e){ return []; } }
+function saveTz(list){ localStorage.setItem('farmaia_trazabilidad', JSON.stringify(list)); }
+function renderTz(){
+  const list = loadTz();
+  $('tzEmpty').style.display = list.length ? 'none' : 'block';
+  $('tzBody').innerHTML = list.map(t => `
+    <tr>
+      <td>${t.fecha}</td>
+      <td>${t.medicamento}</td>
+      <td>${t.gtin||'—'}</td>
+      <td>${t.lote||'—'}</td>
+      <td>${t.vencimiento||'—'}</td>
+      <td>${t.cantidad}</td>
+      <td><button class="del" data-del="${t.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></td>
+    </tr>
+  `).join('');
+  $('tzBody').querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => {
+    saveTz(loadTz().filter(t => t.id !== btn.dataset.del));
+    renderTz();
+  }));
+}
+renderTz();
+$('tzAddBtn').addEventListener('click', () => {
+  const medicamento = $('tzMed').value.trim();
+  if (!medicamento) return;
+  const list = loadTz();
+  list.push({
+    id: Date.now().toString(),
+    fecha: new Date().toLocaleDateString('es-AR'),
+    medicamento,
+    gtin: $('tzGtin').value.trim(),
+    lote: $('tzLote').value.trim(),
+    vencimiento: $('tzVenc').value,
+    cantidad: parseInt($('tzCant').value) || 1
+  });
+  saveTz(list);
+  $('tzMed').value=''; $('tzGtin').value=''; $('tzLote').value=''; $('tzVenc').value=''; $('tzCant').value='1';
+  renderTz();
+});
+
+/* ---------- Comparador de genéricos ---------- */
+$('gnBuscarBtn').addEventListener('click', async () => {
+  const nombre = $('gnNombre').value.trim();
+  if (!nombre) return;
+  $('gnResult').innerHTML = '<div class="loading"><span></span><span></span><span></span></div>';
+  const prompt = `Dame alternativas genéricas o similares disponibles en Argentina para "${nombre}" (mismo principio activo). Respondé SOLO con un JSON array con este formato exacto, sin texto extra, máximo 6 alternativas:\n[{"nombre":"texto","laboratorio":"texto","principioActivo":"texto","formaFarmaceutica":"texto","notaBioequivalencia":"texto breve"}]`;
+  try{
+    const reply = await callClaude([{ role:'user', content: prompt }], SYSTEM_CHAT, 1200);
+    const data = parseJsonArray(reply);
+    if (!data.length){ $('gnResult').innerHTML = '<p class="disclaimer">No se encontraron alternativas.</p>'; return; }
+    $('gnResult').innerHTML = `
+      <table class="data">
+        <thead><tr><th>Nombre</th><th>Laboratorio</th><th>Principio activo</th><th>Forma</th><th>Nota</th></tr></thead>
+        <tbody>${data.map(d => `<tr><td>${d.nombre||'—'}</td><td>${d.laboratorio||'—'}</td><td>${d.principioActivo||'—'}</td><td>${d.formaFarmaceutica||'—'}</td><td>${d.notaBioequivalencia||'—'}</td></tr>`).join('')}</tbody>
+      </table>`;
+  }catch(e){
+    $('gnResult').innerHTML = `<p class="disclaimer">${errMsg(e)}</p>`;
+  }
+});
+</script>
+
+</body>
+</html>

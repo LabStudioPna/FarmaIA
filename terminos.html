@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Términos y Privacidad — FarmaIA</title>
+<meta name="description" content="Términos de uso y política de privacidad de FarmaIA, asistente farmacéutico con inteligencia artificial.">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0D9488;--brand-light:#14B8A6;--accent:#F59E0B;
+  --border:#DCE8E5;--text:#132422;--mid:#5B6F6B;--dim:#7C918D;
+  --heading:#0D9488;
+  --bg-page:#F7FAF9;--surface:#fff;--surface-2:#EEF5F3;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --border:rgba(255,255,255,.12);--text:#EAF3F1;--mid:#9FB3AF;--dim:#7C918D;
+  --heading:#5EEAD4;
+  --bg-page:#0B1615;--surface:#152825;--surface-2:#111F1D;
+}
+body{font-family:var(--sans);color:var(--text);background:var(--bg-page);line-height:1.7;transition:background .2s,color .2s}
+
+header{position:sticky;top:0;z-index:100;background:var(--bg-page);border-bottom:1px solid var(--border);padding:0 24px}
+.nav{max-width:900px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--serif);font-weight:600;font-size:21px;color:var(--heading)}
+.logo em{font-style:italic;color:var(--accent)}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--mid);text-decoration:none;font-size:14px;font-weight:500}
+.nav-links a:hover{color:var(--heading)}
+#theme-toggle{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+
+.container{max-width:800px;margin:0 auto;padding:60px 24px 100px}
+h1{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:600;color:var(--heading);margin-bottom:8px}
+.subtitulo{color:var(--dim);font-size:14px;margin-bottom:48px}
+.toc{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:48px}
+.toc h3{font-size:13px;color:var(--heading);margin-bottom:12px;text-transform:uppercase;letter-spacing:.12em;font-family:var(--sans);font-weight:600}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.toc a{color:var(--mid);text-decoration:none;font-size:14px}
+.toc a:hover{color:var(--brand-light)}
+
+section{margin-bottom:44px;scroll-margin-top:80px}
+h2{font-family:var(--serif);font-size:23px;font-weight:600;color:var(--heading);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+h3{font-size:16px;font-weight:600;color:var(--heading);margin:20px 0 8px}
+p{color:var(--mid);margin-bottom:14px;font-size:15px}
+ul,ol{color:var(--mid);margin:0 0 14px 22px;font-size:15px}
+li{margin-bottom:6px}
+strong{color:var(--text);font-weight:600}
+code{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:13px}
+
+.highlight{background:var(--surface-2);border-left:3px solid var(--brand-light);border-radius:0 8px 8px 0;padding:16px 20px;margin:16px 0}
+.highlight p{margin:0;color:var(--text);font-size:14px}
+.warning{background:rgba(245,158,11,.10);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;margin:16px 0}
+.warning p{margin:0;color:var(--text);font-size:14px}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:var(--surface-2);color:var(--heading);text-align:left;padding:10px 12px;border:1px solid var(--border)}
+td{padding:10px 12px;border:1px solid var(--border);color:var(--mid)}
+
+footer{border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--dim);font-size:13px}
+footer a{color:var(--brand-light);text-decoration:none}
+
+@media(max-width:640px){
+  .container{padding:40px 16px 60px}
+  .nav-links a:not(.nav-cta){display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo">Farma<em>IA</em></a>
+    <div class="nav-links">
+      <a href="index.html">← Volver a inicio</a>
+      <a href="agente-farmacia.html">Ir al Agente</a>
+      <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h1>Términos de Uso y Política de Privacidad</h1>
+  <p class="subtitulo">Última actualización: 23 de julio de 2026</p>
+
+  <div class="toc">
+    <h3>Contenido</h3>
+    <ul>
+      <li><a href="#que-es">1. Qué es FarmaIA</a></li>
+      <li><a href="#como-funciona">2. Cómo funciona técnicamente (importante)</a></li>
+      <li><a href="#privacidad">3. Privacidad y tratamiento de datos</a></li>
+      <li><a href="#api-key">4. Tu API Key de Anthropic</a></li>
+      <li><a href="#responsabilidad">5. Responsabilidad profesional y uso clínico</a></li>
+      <li><a href="#planes">6. Planes, pagos y código de acceso</a></li>
+      <li><a href="#uso-aceptable">7. Uso aceptable</a></li>
+      <li><a href="#cambios">8. Cambios a este documento</a></li>
+      <li><a href="#contacto">9. Contacto</a></li>
+    </ul>
+  </div>
+
+  <section id="que-es">
+    <h2>1. Qué es FarmaIA</h2>
+    <p>FarmaIA es una herramienta desarrollada por <strong>LABStudio.pna</strong> (Paraná, Entre Ríos, Argentina) que utiliza inteligencia artificial para asistir a farmacéuticos y auxiliares de farmacia en Argentina: cálculo de copagos, detección de interacciones y alergias, validación de recetas, consulta de vademécum, registro de trazabilidad y comparación de genéricos.</p>
+    <p>FarmaIA es una <strong>herramienta de apoyo profesional</strong>, no un servicio médico ni de asesoría farmacéutica formal. Su uso no reemplaza el criterio del farmacéutico matriculado ni la consulta al médico prescriptor.</p>
+  </section>
+
+  <section id="como-funciona">
+    <h2>2. Cómo funciona técnicamente</h2>
+    <p>Es importante que entiendas la arquitectura de FarmaIA antes de usarlo, porque determina qué datos tuyos (y de tus pacientes) pasan por dónde:</p>
+
+    <h3>2.1 Sin backend propio para tus consultas</h3>
+    <p>FarmaIA funciona directamente en tu navegador. <strong>LABStudio no recolecta ni almacena el contenido de tus consultas</strong> por el solo hecho de usar la herramienta.</p>
+
+    <h3>2.2 Chat, recetas y análisis con IA</h3>
+    <p>Cuando consultás al chat, subís una receta o pedís un análisis de interacciones, esa información se envía <strong>directamente desde tu navegador a la API de Anthropic</strong> (la empresa que provee el modelo de inteligencia artificial), usando tu propia API Key personal. <strong>LABStudio no aloja ni tiene acceso a esos datos en ningún momento</strong> — no existe un servidor de LABStudio en el medio de ese flujo.</p>
+
+    <h3>2.3 Almacenamiento de tus datos</h3>
+    <p>El registro de trazabilidad (medicamentos, GTIN, lote, vencimiento) se guarda únicamente en el <code>localStorage</code> de tu propio navegador, en tu dispositivo. Ese registro no se sincroniza ni se envía a ningún servidor de LABStudio, y se pierde si limpiás los datos del navegador o cambiás de dispositivo.</p>
+
+    <h3>2.4 Verificación de acceso</h3>
+    <p>Para identificarte (login con Google) y, una vez vencida la prueba gratuita, para validar tu código de acceso, tu navegador consulta un servicio de LABStudio que solo verifica si el email o el código está habilitado — no procesa ni almacena el contenido de tus consultas farmacéuticas.</p>
+
+    <div class="highlight">
+      <p><strong>En resumen:</strong> el contenido de tus consultas, recetas y análisis nunca pasa por servidores de LABStudio. Hoy, FarmaIA no recolecta ningún dato de pacientes salvo que completes voluntariamente el formulario de contacto.</p>
+    </div>
+  </section>
+
+  <section id="privacidad">
+    <h2>3. Privacidad y tratamiento de datos</h2>
+
+    <h3>3.1 Qué datos recolecta LABStudio</h3>
+    <table>
+      <tr><th>Dato</th><th>Para qué</th><th>Dónde se guarda</th></tr>
+      <tr><td>Nombre, email y WhatsApp (solo si completás el formulario de contacto)</td><td>Contactarte para responder tu consulta o coordinar el acceso al plan pago</td><td>Formspree (formulario de contacto)</td></tr>
+      <tr><td>Email de Google y estado de tu prueba/plan</td><td>Habilitar el login y saber si tu prueba gratuita sigue vigente</td><td>Base de LABStudio (login), no incluye datos de pacientes</td></tr>
+    </table>
+
+    <h3>3.2 Qué datos NO recolecta LABStudio</h3>
+    <ul>
+      <li>Datos de pacientes: nombres, DNI, recetas, historial clínico o medicación</li>
+      <li>Resultados de los análisis de interacciones, alergias o validación de recetas</li>
+      <li>Tu API Key de Anthropic (queda solo en el <code>sessionStorage</code> de tu navegador, se borra al cerrar la pestaña)</li>
+      <li>El contenido de tus conversaciones con el chat de IA</li>
+      <li>Tu registro de trazabilidad (vive solo en tu navegador)</li>
+    </ul>
+
+    <h3>3.3 Terceros que sí procesan datos (fuera de LABStudio)</h3>
+    <ul>
+      <li><strong>Anthropic (Claude API):</strong> procesa el contenido que le enviás para el análisis (incluyendo recetas o datos de pacientes que decidas consultar). Se rige por su propia política de privacidad, disponible en anthropic.com/privacy. Recomendamos no incluir datos identificatorios del paciente más allá de lo necesario para la consulta.</li>
+      <li><strong>Formspree:</strong> si completás el formulario de contacto, esos datos los procesa Formspree para hacérnoslos llegar por email, sujeto a su propia política de privacidad.</li>
+      <li><strong>Google (inicio de sesión):</strong> si usás el ingreso con Google, la autenticación la maneja Google según su propia política de privacidad. FarmaIA solo recibe tu identificación básica para habilitar el acceso.</li>
+    </ul>
+
+    <h3>3.4 Tus derechos</h3>
+    <p>Podés pedirnos en cualquier momento que eliminemos los datos de contacto o de login asociados a tu cuenta escribiéndonos a los datos de contacto de la sección 9. Como FarmaIA no almacena el contenido de tus consultas ni datos de pacientes en servidores propios, no hay otro dato personal almacenado por LABStudio para eliminar.</p>
+  </section>
+
+  <section id="api-key">
+    <h2>4. Tu API Key de Anthropic</h2>
+    <p>Para usar las funciones de inteligencia artificial de FarmaIA necesitás tu propia API Key de Anthropic (console.anthropic.com), con su propio método de pago cargado ahí.</p>
+    <ul>
+      <li>El costo del uso de la IA lo pagás <strong>directamente a Anthropic</strong>, no a LABStudio</li>
+      <li>Tu API Key se guarda únicamente en el <code>sessionStorage</code> de tu navegador — se borra automáticamente al cerrar la pestaña</li>
+      <li>Sos responsable de la seguridad y el uso de tu propia API Key</li>
+    </ul>
+  </section>
+
+  <section id="responsabilidad">
+    <h2>5. Responsabilidad profesional y uso clínico</h2>
+    <div class="warning">
+      <p><strong>Importante:</strong> los cálculos de copago, el análisis de interacciones/alergias/duplicidad, la validación de recetas, la información de vademécum, las alertas de trazabilidad y las alternativas genéricas que devuelve FarmaIA son generados por un modelo de inteligencia artificial y pueden contener errores u omisiones. FarmaIA <strong>no es un dispositivo médico, no brinda asesoramiento médico ni farmacéutico formal</strong>, y no reemplaza el criterio del farmacéutico matriculado ni la consulta al médico prescriptor. Ninguna decisión sobre dispensa, dosis, interacciones o tratamiento de un paciente debe tomarse basándose únicamente en la salida de esta herramienta.</p>
+    </div>
+    <p>El registro de trazabilidad de FarmaIA es un respaldo interno de la farmacia y <strong>no reemplaza</strong> la carga obligatoria en el Sistema Nacional de Trazabilidad de ANMAT ni ningún otro requisito regulatorio vigente.</p>
+    <p>LABStudio no se responsabiliza por decisiones clínicas o de dispensa tomadas exclusivamente en base a los resultados generados por la herramienta, ni por errores, daños a la salud de terceros o incumplimientos normativos derivados de su uso sin la debida revisión profesional.</p>
+  </section>
+
+  <section id="planes">
+    <h2>6. Planes, pagos y código de acceso</h2>
+    <p>FarmaIA ofrece una prueba gratuita de 5 días (con acceso completo a las funciones, pagando solo tu propio consumo de API a Anthropic) y un Plan Farmacia pago, que incluye normativa ANMAT actualizada, control de stock con alertas, soporte prioritario por WhatsApp y onboarding personalizado.</p>
+    <p>Una vez contratado el plan, LABStudio te entrega un <strong>código de acceso</strong> que desbloquea el uso continuado del agente más allá de los 5 días de prueba. Ese código es personal/intransferible a tu farmacia y puede ser desactivado por LABStudio en caso de falta de pago o uso indebido, sin necesidad de intervenir tu API Key ni tus datos locales.</p>
+    <p>Los pagos de planes se gestionan de forma directa con LABStudio. Los términos específicos de facturación se comunican al momento de la contratación.</p>
+  </section>
+
+  <section id="uso-aceptable">
+    <h2>7. Uso aceptable</h2>
+    <p>Al usar FarmaIA, te comprometés a:</p>
+    <ul>
+      <li>No usar la herramienta para fines ilegales o fraudulentos</li>
+      <li>No intentar vulnerar la seguridad de la plataforma o de otros usuarios</li>
+      <li>Ser responsable de la veracidad de los datos y recetas que cargás para análisis</li>
+      <li>Cumplir con la normativa vigente de dispensa, trazabilidad y protección de datos de salud de tus pacientes</li>
+      <li>No revender ni redistribuir el acceso a la herramienta ni tu código de acceso sin autorización de LABStudio</li>
+    </ul>
+  </section>
+
+  <section id="cambios">
+    <h2>8. Cambios a este documento</h2>
+    <p>Podemos actualizar estos términos ocasionalmente. Los cambios importantes se comunicarán a través del sitio. El uso continuado de FarmaIA después de un cambio implica la aceptación de los nuevos términos.</p>
+  </section>
+
+  <section id="contacto">
+    <h2>9. Contacto</h2>
+    <p>Para consultas sobre estos términos, privacidad, o para ejercer tus derechos sobre tus datos:</p>
+    <ul>
+      <li>Email: <a href="mailto:labstudio.pna@gmail.com" style="color:var(--brand-light)">labstudio.pna@gmail.com</a></li>
+      <li>WhatsApp: <a href="https://wa.me/5493435344597" style="color:var(--brand-light)">+54 9 3435 344597</a></li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  <p>FarmaIA — Desarrollado por <a href="https://labstudiopna.github.io" target="_blank">LABStudio.pna</a> · Paraná, Entre Ríos, Argentina</p>
+</footer>
+
+<script>
+  (function() {
+    const savedTheme = localStorage.getItem('farmaia_theme') || 'light';
+    if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  })();
+  function applyTheme(theme) {
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    else document.documentElement.removeAttribute('data-theme');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('farmaia_theme', next);
+    applyTheme(next);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    applyTheme(localStorage.getItem('farmaia_theme') || 'light');
+  });
+</script>
+
+</body>
+</html>
