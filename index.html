@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="shortcut icon" href="favicon.ico">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#0E8C7F">
+<meta name="theme-color" content="#0A101C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="FarmaIA">
 
@@ -30,361 +30,467 @@
 <meta name="twitter:image" content="https://labstudiopna.github.io/FarmaIA/og-image.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A101C;--bg-2:#111A2A;--bg-3:#182338;--bg-soft:#0D1524;
+  --border:#1F2C40;--border-soft:#182233;
+  --text:#EAF0F8;--mid:#93A2B8;--dim:#5C6C82;
+  --brand:#14B8A6;--brand-soft:#5EEAD4;--brand-2:#F59E0B;--brand-2-soft:#FBBF24;
+  --amber:#F59E0B;--red:#F87171;--ok:#10B981;--ok-soft:#34D399;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --radius:16px;
+}
+</style>
+<link rel="stylesheet" href="bento.css">
 <script src="tracker.js" defer></script>
 </head>
 <body>
 
-<header class="site">
-  <nav class="nav">
-    <a href="#" class="brand"><img src="favicon-192.png" alt="FarmaIA"> Farma<span class="ia">IA</span></a>
-    <div class="navlinks">
-      <a href="#features">Características</a>
-      <a href="#pricing">Precios</a>
-      <a href="guia-completa.html">📚 Guía Completa</a>
-      <a href="#contacto">Contacto</a>
-      <a href="agente-farmacia.html" class="mobile-only-cta">Ir al Agente →</a>
-    </div>
-    <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" title="Modo claro/oscuro">🌙</button>
-      <a href="agente-farmacia.html" class="btn btn-primary">Ir al Agente →</a>
-      <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
-    </div>
-  </nav>
-</header>
+<nav>
+  <a href="#" class="logo">
+    <img src="favicon-192.png" alt="FarmaIA">
+    <div class="logo-name">Farma<em>IA</em></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Características</a></li>
+    <li><a href="#pricing">Precios</a></li>
+    <li><a href="#faq">Preguntas frecuentes</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="guia-completa.html" target="_blank">Guía Completa</a></li>
+  </ul>
+  <a href="agente-farmacia.html" class="nav-cta" id="nav-cta-desktop">Ir al Agente →</a>
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
 
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#features" onclick="closeMobileMenu()">Características</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Precios</a>
+  <a href="#faq" onclick="closeMobileMenu()">Preguntas frecuentes</a>
+  <a href="#contacto" onclick="closeMobileMenu()">Contacto</a>
+  <a href="guia-completa.html" target="_blank">Guía Completa</a>
+  <a href="agente-farmacia.html" class="nav-cta">Ir al Agente →</a>
+</div>
+
+<!-- HERO -->
 <section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
   <div class="container hero-grid">
     <div>
-      <span class="pill">💊 Hecho en Paraná, para farmacias argentinas</span>
-      <h1>Tu asistente de farmacia <span>experto en IA</span></h1>
+      <span class="pill"><span class="dot"></span>Hecho en Paraná, para farmacias argentinas</span>
+      <h1>Cada copago, <em>calculado al instante</em></h1>
       <p class="lead">Calculá copagos por obra social, detectá interacciones entre medicamentos y validá recetas electrónicas en segundos. Sin instalación, sin complicaciones — igual de simple que abrir WhatsApp.</p>
       <div class="hero-cta">
-        <a href="agente-farmacia.html" class="btn btn-primary">Analizar mi primera factura gratis →</a>
+        <a href="agente-farmacia.html" class="btn btn-primary">Calcular mi primer copago →</a>
         <a href="#features" class="btn btn-ghost">Ver características</a>
       </div>
       <div class="hero-stats">
-        <div class="stat"><b>Al instante</b><span>Copago calculado por obra social</span></div>
-        <div class="stat"><b>6</b><span>Comandos listos: copago, interacciones, receta y más</span></div>
-        <div class="stat"><b>0%</b><span>Instalación</span></div>
-        <div class="stat"><b>100%</b><span>Corre en tu navegador — nada en servidores de terceros</span></div>
+        <div class="hstat"><b>Al instante</b><span>Copago por obra social</span></div>
+        <div class="hstat"><b>6</b><span>Comandos listos</span></div>
+        <div class="hstat"><b>100%</b><span>Corre en tu navegador</span></div>
       </div>
     </div>
-    <div class="mock">
-      <div class="mock-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; farmaia.labstudiopna.github.io</div>
-      <div class="mock-body">
-        <div class="msg user">Calcular copago OSDE para Atorvastatina</div>
-        <div class="msg bot"><b>FarmaIA:</b> Buscando cobertura vigente de OSDE para Atorvastatina 20mg...</div>
-        <div class="mock-result">✓ Cobertura: 40% &nbsp;|&nbsp; PVP: $18.400 &nbsp;|&nbsp; Copago del afiliado: $11.040<br>⚠️ Verificá receta electrónica antes de dispensar</div>
+    <div class="hero-bento">
+      <div class="hb-tile hb-wide" style="grid-row:span 2">
+        <div class="hb-tag">Copago · en vivo</div>
+        <div class="hb-chat-u">"Calcular copago OSDE para Atorvastatina"</div>
+        <div class="hb-chat-a">Buscando cobertura vigente de OSDE para Atorvastatina 20mg...</div>
+        <div class="bento-hero-visual" style="margin-top:12px">
+          <div class="bhv-row"><span>Cobertura</span><b>40%</b></div>
+          <div class="bhv-row"><span>PVP</span><b>$18.400</b></div>
+          <div class="bhv-row"><span>Copago del afiliado</span><b>$11.040</b></div>
+        </div>
+        <div class="hb-badges">
+          <span class="hb-badge a">Verificá receta electrónica antes de dispensar</span>
+        </div>
+      </div>
+      <div class="hb-tile">
+        <div class="hb-big">6</div>
+        <div class="hb-lbl">comandos rápidos</div>
+      </div>
+      <div class="hb-tile">
+        <div class="hb-big g">0</div>
+        <div class="hb-lbl">interacciones sin ver</div>
+      </div>
+      <div class="hb-tile hb-wide">
+        <div class="hb-tag">Trazabilidad ANMAT</div>
+        <div class="hb-badges">
+          <span class="hb-badge g">código válido</span>
+          <span class="hb-badge a">verificado</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- TRUST STRIP -->
+<section class="trust" style="padding:0">
+  <div class="container trust-grid">
+    <div class="tstat"><b>Al <em>instante</em></b><span>Copago calculado por obra social</span></div>
+    <div class="tstat"><b><em>6</em></b><span>Comandos: copago, interacciones, receta y más</span></div>
+    <div class="tstat"><b><em>0</em>%</b><span>Instalación</span></div>
+    <div class="tstat"><b><em>100</em>%</b><span>En tu navegador, nada en servidores de terceros</span></div>
+  </div>
+</section>
+
+<!-- FEATURES BENTO -->
 <section id="features">
-  <div class="container">
-    <div class="banner">
-      <div>
-        <h3>💊 Seis comandos, un mismo chat</h3>
-        <p>Copago, interacciones, validación de receta, vademécum, normativa ANMAT y stock — todo desde el mismo cuadro de texto, sin cambiar de pantalla.</p>
-      </div>
-      <a href="agente-farmacia.html" class="btn btn-accent">Probar el chat →</a>
-    </div>
-  </div>
-</section>
-
-<section>
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Suite de herramientas</span>
       <h2>Todo lo que hoy resolvés a mano o llamando a la obra social</h2>
-      <p class="muted">Nada de "IA que opina la dosis". Cada comando produce un dato o una guía lista para usar en el mostrador.</p>
+      <p>Nada de "IA que opina la dosis". Cada comando produce un dato o una guía lista para el mostrador.</p>
     </div>
-    <div class="grid cols-4">
-      <div class="card"><span class="icon">💬</span><h3>Chat farmacéutico IA</h3><p>Preguntas libres sobre medicamentos, interacciones y normativa vigente — el mismo chat resuelve los seis comandos.</p></div>
-      <div class="card"><span class="icon">💰</span><h3>Cálculo de copago <span class="badge">/copago</span></h3><p>Copago exacto por obra social (OSDE, IOSPER, PAMI y más) para cualquier medicamento, al instante.</p></div>
-      <div class="card"><span class="icon">⚠️</span><h3>Interacciones, alergias y duplicidad <span class="badge">/interacciones</span></h3><p>Cruce automático entre medicamentos, contra alergias registradas del paciente y detección de duplicidad terapéutica, con la gravedad de cada alerta.</p></div>
-      <div class="card"><span class="icon">📋</span><h3>Validación de receta <span class="badge">/validar</span></h3><p>Guía paso a paso para validar una receta electrónica antes de despachar, sin dudas de último momento.</p></div>
-      <div class="card"><span class="icon">📖</span><h3>Vademécum instantáneo <span class="badge">/vademecum</span></h3><p>Dosis, indicaciones y contraindicaciones de cualquier droga, sin buscar en otro lado.</p></div>
-      <div class="card"><span class="icon">🏛️</span><h3>Normativa ANMAT <span class="badge">/anmat</span></h3><p>Regulación vigente sobre recetas y dispensa, actualizada, sin perder tiempo buscando en el boletín oficial.</p></div>
-      <div class="card"><span class="icon">🔗</span><h3>Trazabilidad ANMAT <span class="badge">Nuevo</span></h3><p>Verificá el código de trazabilidad serializado de una caja o blister contra el Sistema Nacional de Trazabilidad antes de dispensar.</p></div>
-      <div class="card"><span class="icon">💊</span><h3>Comparador de genéricos <span class="badge">Nuevo</span></h3><p>¿Hay un genérico con mejor cobertura para esta obra social? Comparación al instante, antes de cerrar la venta.</p></div>
-      <div class="card"><span class="icon">📦</span><h3>Control de stock <span class="badge">/stock</span></h3><p>Alertas de stock bajo antes de quedarte sin un medicamento clave en el mostrador.</p></div>
-      <div class="card"><span class="icon">📅</span><h3>Vencimientos con semáforo</h3><p>Vencimientos de convenios y habilitaciones en rojo/naranja/verde, para no perder ningún plazo.</p></div>
+
+    <div class="bento-grid">
+      <div class="bento b-2x2">
+        <span class="badge-new">/copago</span>
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18M7 6h1v4"/></svg></div>
+        <h3>Cálculo de copago</h3>
+        <p>Copago exacto por obra social (OSDE, IOSPER, PAMI y más) para cualquier medicamento, al instante.</p>
+        <div class="bento-hero-visual">
+          <div class="bhv-row"><span>OSDE</span><b>40% cobertura</b></div>
+          <div class="bhv-row"><span>PAMI</span><b>80% cobertura</b></div>
+        </div>
+      </div>
+      <div class="bento b-2x1">
+        <span class="badge-new">/interacciones</span>
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <h3>Interacciones, alergias y duplicidad</h3>
+        <p>Cruce automático entre medicamentos, contra alergias registradas y detección de duplicidad terapéutica, con la gravedad de cada alerta.</p>
+      </div>
+      <div class="bento b-2x1">
+        <span class="badge-new">Nuevo</span>
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg></div>
+        <h3>Trazabilidad ANMAT</h3>
+        <p>Verificá el código de trazabilidad serializado de una caja o blister contra el Sistema Nacional de Trazabilidad antes de dispensar.</p>
+      </div>
+      <div class="bento b-1x1">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <h3>Chat farmacéutico IA</h3>
+        <p>El mismo chat resuelve los seis comandos.</p>
+      </div>
+      <div class="bento b-1x1">
+        <span class="badge-new">/validar</span>
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg></div>
+        <h3>Validación de receta</h3>
+        <p>Guía paso a paso antes de despachar, sin dudas de último momento.</p>
+      </div>
+      <div class="bento b-1x1">
+        <span class="badge-new">Nuevo</span>
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <h3>Comparador de genéricos</h3>
+        <p>¿Hay uno con mejor cobertura? Comparación al instante.</p>
+      </div>
+    </div>
+
+    <div class="included">
+      <div class="included-head">
+        <h4>También incluido</h4>
+        <span>Sin cargo extra</span>
+      </div>
+      <div class="included-grid">
+        <div class="inc-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span><b>Vademécum instantáneo</b> — dosis, indicaciones y contraindicaciones al toque</div>
+        <div class="inc-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span><b>Normativa ANMAT</b> — regulación vigente sobre recetas y dispensa, actualizada</div>
+        <div class="inc-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span><b>Control de stock</b> — alertas antes de quedarte sin un medicamento clave</div>
+        <div class="inc-item"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span><b>Vencimientos con semáforo</b> — convenios y habilitaciones en rojo/naranja/verde</div>
+      </div>
     </div>
   </div>
 </section>
 
-<section>
+<!-- ROADMAP -->
+<section style="background:var(--bg-soft);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)">
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Transparencia</span>
-      <h2>Roadmap Público 2026</h2>
-      <p class="muted">Qué está disponible hoy, qué viene en Fase 2 (Septiembre) y qué planeamos para después.</p>
+      <h2>Roadmap público 2026</h2>
+      <p>Qué está disponible hoy, qué viene en Fase 2 (Septiembre) y qué planeamos para después.</p>
     </div>
-    <div class="grid cols-3">
-      <div class="card" style="border-left: 4px solid var(--brand);">
-        <span style="font-weight:600;color:var(--brand);">✓ DISPONIBLE HOY</span>
-        <ul style="font-size:14px;margin:12px 0 0;padding-left:20px;color:var(--text-muted);">
-          <li>Chat farmacéutico con IA</li>
-          <li>Cálculo de copago por obra social</li>
-          <li>Interacciones, alergias y duplicidad terapéutica</li>
-          <li>Validación de receta electrónica y vademécum</li>
-          <li>Trazabilidad ANMAT y comparador de genéricos</li>
-        </ul>
+    <div class="bento-grid">
+      <div class="bento b-2x1" style="border-color:color-mix(in srgb, var(--ok) 35%, var(--border))">
+        <h3 style="color:var(--ok-soft)">✓ Disponible hoy</h3>
+        <p>Chat farmacéutico, cálculo de copago, interacciones/alergias/duplicidad, validación de receta y vademécum, trazabilidad ANMAT y comparador de genéricos.</p>
       </div>
-      <div class="card" style="border-left: 4px solid var(--accent);">
-        <span style="font-weight:600;color:var(--accent);">🔄 FASE 2 (Septiembre 2026)</span>
-        <ul style="font-size:14px;margin:12px 0 0;padding-left:20px;color:var(--text-muted);">
-          <li>Recordatorios de adherencia por WhatsApp</li>
-          <li>Pronóstico de quiebre de stock (no solo alerta, predicción)</li>
-          <li>Reporte mensual en PDF por rubro</li>
-        </ul>
+      <div class="bento b-1x1" style="border-color:color-mix(in srgb, var(--amber) 35%, var(--border))">
+        <h3 style="color:var(--amber)">🔄 Fase 2 · Sept 2026</h3>
+        <p>Recordatorios de adherencia por WhatsApp, pronóstico de quiebre de stock, reporte mensual en PDF.</p>
       </div>
-      <div class="card" style="border-left: 4px solid #999;">
-        <span style="font-weight:600;color:#999;">⏳ FASE 3 (2027)</span>
-        <ul style="font-size:14px;margin:12px 0 0;padding-left:20px;color:var(--text-muted);">
-          <li>Atención de consultas por WhatsApp 24/7</li>
-          <li>Integración con sistemas de gestión (SIAF, ECAMOD)</li>
-          <li>Dashboard de rentabilidad por rubro</li>
-        </ul>
+      <div class="bento b-1x1">
+        <h3 style="color:var(--dim)">⏳ Fase 3 · 2027</h3>
+        <p>Atención por WhatsApp 24/7, integración con SIAF/ECAMOD, dashboard de rentabilidad.</p>
       </div>
     </div>
-    <p style="font-size:14px;color:var(--text-muted);text-align:center;margin-top:20px;max-width:600px;margin-left:auto;margin-right:auto;">Somos honestos con nuestro roadmap. Cada feature se lanza cuando está listo, no cuando queremos parecer listos. Escribinos si querés que prioricemos algo específico.</p>
   </div>
 </section>
 
-<section style="background:var(--bg-alt);">
+<!-- STEPS -->
+<section>
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Flujo simple</span>
       <h2>Tres pasos hasta la respuesta</h2>
     </div>
-    <div class="steps">
+    <div class="steps-wrap">
       <div class="step">
-        <div class="num">1</div>
-        <h4>Cargá tu API key de Anthropic</h4>
-        <p>Creás cuenta gratis en console.anthropic.com, generás una key y la pegás en FarmaIA. Nadie ve tu clave, solo vos.</p>
-        <span class="time">1 minuto</span>
+        <div class="stepn">1</div>
+        <div>
+          <div class="stept">Cargá tu API key de Anthropic</div>
+          <div class="stepd">Creás cuenta gratis en console.anthropic.com, generás una key y la pegás en FarmaIA. Nadie más la ve.</div>
+          <span class="stag">1 minuto</span>
+        </div>
       </div>
       <div class="step">
-        <div class="num">2</div>
-        <h4>Escribí tu consulta o comando</h4>
-        <p>"Calcular copago OSDE para Atorvastatina" o cualquiera de los seis comandos, en lenguaje natural.</p>
-        <span class="time">Segundos</span>
+        <div class="stepn">2</div>
+        <div>
+          <div class="stept">Escribí tu consulta o comando</div>
+          <div class="stepd">"Calcular copago OSDE para Atorvastatina" o cualquiera de los seis comandos, en lenguaje natural.</div>
+          <span class="stag">Segundos</span>
+        </div>
       </div>
       <div class="step">
-        <div class="num">3</div>
-        <h4>Recibí la respuesta lista para usar</h4>
-        <p>Copago, alerta de interacción o guía de validación, lista para aplicar en el mostrador.</p>
-        <span class="time">Instantáneo</span>
+        <div class="stepn">3</div>
+        <div>
+          <div class="stept">Recibí la respuesta lista para usar</div>
+          <div class="stepd">Copago, alerta de interacción o guía de validación, lista para aplicar en el mostrador.</div>
+          <span class="stag">Instantáneo</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section style="background:var(--bg-alt);">
+<!-- TESTIMONIAL -->
+<section style="background:var(--bg-soft);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)">
   <div class="container">
-    <div class="quote">
-      <p>"Antes llamaba a la obra social para confirmar un copago dudoso. Ahora lo tengo en el chat antes de que el cliente termine de sacarse el barbijo."</p>
-      <div class="who"><b>Farmacéutica</b> — Farmacia de barrio, Entre Ríos</div>
+    <div class="bento" style="max-width:700px;margin:0 auto;text-align:center;padding:40px">
+      <p style="font-family:var(--serif);font-size:20px;font-style:italic;color:#fff;line-height:1.6;margin-bottom:16px">"Antes llamaba a la obra social para confirmar un copago dudoso. Ahora lo tengo en el chat antes de que el cliente termine de sacarse el barbijo."</p>
+      <div style="font-size:13px;color:var(--dim)"><b style="color:var(--mid)">Farmacéutica</b> — Farmacia de barrio, Entre Ríos</div>
     </div>
   </div>
 </section>
 
+<!-- PRICING -->
 <section id="pricing">
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Transparente y sin sorpresas</span>
       <h2>Planes flexibles</h2>
-      <p class="muted">El costo de la IA lo pagás directamente a Anthropic. FarmaIA es la plataforma que lo hace farmacéutico.</p>
+      <p>El costo de la IA lo pagás directamente a Anthropic. FarmaIA es la plataforma que lo hace farmacéutico.</p>
     </div>
-    <div class="pricing-grid">
+    <div class="pgrid">
       <div class="plan">
         <h3>Uso propio</h3>
         <div class="price">Gratis</div>
-        <p class="desc">Acceso completo · pagás solo la API (~USD 0.01–0.02 por consulta)</p>
+        <div class="period">Acceso completo · pagás solo la API (~USD 0.01–0.02 por consulta)</div>
         <ul>
-          <li>Chat farmacéutico IA</li>
-          <li>Cálculo de copago por obra social</li>
-          <li>Detección de interacciones</li>
-          <li>Validación de recetas y vademécum</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Chat farmacéutico IA</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Cálculo de copago por obra social</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Detección de interacciones</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Validación de recetas y vademécum</li>
         </ul>
-        <a href="agente-farmacia.html" class="btn btn-ghost">Empezar gratis</a>
+        <a href="agente-farmacia.html" class="btn btn-ghost" style="justify-content:center">Empezar gratis</a>
       </div>
-      <div class="plan">
+      <div class="plan feat">
+        <span class="plan-badge">Recomendado</span>
         <h3>Farmacia</h3>
         <div class="price">USD 80<small>/mes</small></div>
-        <p class="desc">Por farmacia · hasta 5 usuarios</p>
+        <div class="period">Por farmacia · hasta 5 usuarios</div>
         <ul>
-          <li>Todo de Uso propio</li>
-          <li>Normativa ANMAT actualizada automáticamente</li>
-          <li>Control de stock con alertas</li>
-          <li>Soporte por WhatsApp (24 hs)</li>
-          <li>Onboarding personalizado</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Todo de Uso propio</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Normativa ANMAT actualizada automáticamente</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Control de stock con alertas</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Soporte por WhatsApp (24 hs)</li>
+          <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg></span>Onboarding personalizado</li>
         </ul>
-        <a href="agente-farmacia.html" class="btn btn-primary">Contratar plan</a>
+        <a href="agente-farmacia.html" class="btn btn-primary" style="justify-content:center">Contratar plan →</a>
       </div>
     </div>
   </div>
 </section>
 
-<section id="faq" style="background:var(--bg-alt);">
-  <div class="container" style="max-width:760px;">
+<!-- FAQ -->
+<section id="faq" style="background:var(--bg-soft);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)">
+  <div class="container">
     <div class="section-head">
       <span class="eyebrow">Lo que más nos preguntan</span>
       <h2>Preguntas frecuentes</h2>
     </div>
-    <details class="faq-item">
-      <summary>¿Qué es una API key y cuánto cuesta?</summary>
-      <p>Es una clave personal para usar la IA de Anthropic. Creás cuenta gratis en console.anthropic.com, cargás crédito y generás tu key. Con USD 5 hacés varios cientos de consultas.</p>
-    </details>
-    <details class="faq-item">
-      <summary>¿Los datos de mis clientes son privados?</summary>
-      <p>Sí. FarmaIA no tiene backend propio. Tu API key y las consultas van directo de tu navegador a Anthropic. Al cerrar la pestaña, todo se borra del dispositivo salvo lo que decidas guardar.</p>
-    </details>
-    <details class="faq-item">
-      <summary>¿Reemplaza al farmacéutico?</summary>
-      <p>No. Es una herramienta de apoyo. Acelera cálculos y detecta alertas, pero la validación final de cualquier dispensa siempre es de un profesional matriculado.</p>
-    </details>
-    <details class="faq-item">
-      <summary>¿Funciona en el celular?</summary>
-      <p>Sí, es responsive. Funciona bien en smartphone y tablet detrás del mostrador, sin instalar ninguna app.</p>
-    </details>
+    <div class="faq-wrap">
+      <div class="faqitem">
+        <div class="faqq" onclick="toggleFaq(this)">¿Qué es una API key y cuánto cuesta?<span class="faqico">+</span></div>
+        <div class="faqa">Es una clave personal para usar la IA de Anthropic. Creás cuenta gratis en console.anthropic.com, cargás crédito y generás tu key. Con USD 5 hacés varios cientos de consultas.</div>
+      </div>
+      <div class="faqitem">
+        <div class="faqq" onclick="toggleFaq(this)">¿Los datos de mis clientes son privados?<span class="faqico">+</span></div>
+        <div class="faqa">Sí. FarmaIA no tiene backend propio. Tu API key y las consultas van directo de tu navegador a Anthropic. Al cerrar la pestaña, todo se borra del dispositivo salvo lo que decidas guardar.</div>
+      </div>
+      <div class="faqitem">
+        <div class="faqq" onclick="toggleFaq(this)">¿Reemplaza al farmacéutico?<span class="faqico">+</span></div>
+        <div class="faqa">No. Es una herramienta de apoyo. Acelera cálculos y detecta alertas, pero la validación final de cualquier dispensa siempre es de un profesional matriculado.</div>
+      </div>
+      <div class="faqitem">
+        <div class="faqq" onclick="toggleFaq(this)">¿Funciona en el celular?<span class="faqico">+</span></div>
+        <div class="faqa">Sí, es responsive. Funciona bien en smartphone y tablet detrás del mostrador, sin instalar ninguna app.</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section>
+<!-- CTA FINAL -->
+<section id="contacto">
   <div class="container">
     <div class="cta-final">
       <h2>Probalo ahora, gratis</h2>
       <p>Sin registro, sin tarjeta. Solo tu API key y listo.</p>
       <div class="hero-cta">
-        <a href="agente-farmacia.html" class="btn btn-accent">Abrir FarmaIA →</a>
-        <a href="guia-completa.html" class="btn btn-ghost" style="border-color:rgba(255,255,255,.3);">📚 Leer documentación</a>
+        <a href="agente-farmacia.html" class="btn btn-primary">Abrir FarmaIA →</a>
+        <a href="guia-completa.html" target="_blank" class="btn btn-ghost">Leer documentación</a>
       </div>
     </div>
   </div>
 </section>
 
-<section id="contacto">
-  <div class="container">
-    <div class="section-head">
+<!-- CONTACTO -->
+<section style="padding-top:0">
+  <div class="container contact-wrap">
+    <div class="section-head" style="text-align:left;margin-bottom:0">
       <span class="eyebrow">¿Tenés dudas?</span>
       <h2>Escribinos</h2>
-      <p class="muted">¿Tenés una pregunta o una propuesta para tu farmacia? Contanos y te respondemos a la brevedad.</p>
+      <p>¿Tenés una pregunta o una propuesta para tu farmacia? Contanos y te respondemos a la brevedad.</p>
     </div>
-    <form class="waitlist" id="contactForm" action="https://formspree.io/f/mojgnpzn" method="POST">
-      <div class="row">
-        <div>
-          <label for="cf-name">Nombre</label>
-          <input id="cf-name" type="text" name="name" required placeholder="Tu nombre">
-        </div>
-        <div>
-          <label for="cf-email">Email</label>
-          <input id="cf-email" type="email" name="email" required placeholder="vos@email.com">
-        </div>
+    <form class="cform" id="contactForm" action="https://formspree.io/f/mqererkb" method="POST">
+      <div class="cfield">
+        <label for="cf-name">Nombre</label>
+        <input id="cf-name" type="text" name="name" required placeholder="Tu nombre">
       </div>
-      <div class="row">
-        <div class="full">
-          <label for="cf-whatsapp">WhatsApp (opcional)</label>
-          <input id="cf-whatsapp" type="tel" name="whatsapp" placeholder="+54 9 343...">
-        </div>
+      <div class="cfield">
+        <label for="cf-email">Email</label>
+        <input id="cf-email" type="email" name="email" required placeholder="vos@email.com">
       </div>
-      <div class="row">
-        <div class="full">
-          <label for="cf-msg">Mensaje</label>
-          <textarea id="cf-msg" name="message" required placeholder="Contanos qué necesitás..."></textarea>
-        </div>
+      <div class="cfield">
+        <label for="cf-whatsapp">WhatsApp (opcional)</label>
+        <input id="cf-whatsapp" type="tel" name="whatsapp" placeholder="+54 9 343...">
+      </div>
+      <div class="cfield">
+        <label for="cf-msg">Mensaje</label>
+        <textarea id="cf-msg" name="message" required placeholder="Contanos qué necesitás..."></textarea>
       </div>
       <input type="hidden" name="_subject" value="Nuevo contacto — FarmaIA">
-      <button type="submit" class="btn btn-primary">Enviar mensaje</button>
-      <div class="form-success" id="cfSuccess">✓ ¡Listo! Recibimos tu mensaje, te respondemos a la brevedad.</div>
+      <button type="submit" class="cform-submit" id="cform-submit">Enviar mensaje</button>
+      <div class="cform-status" id="cform-status" role="status" aria-live="polite"></div>
     </form>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer class="site">
   <div class="container">
     <div class="foot-grid">
       <div class="foot-brand">
-        <a href="#" class="brand"><img src="favicon-192.png" alt="FarmaIA" style="width:30px;height:30px;"> Farma<span class="ia" style="color:var(--accent-light);">IA</span></a>
-        <p style="margin-top:12px;max-width:320px;">Calculá copagos, detectá interacciones y validá recetas electrónicas con IA. Hecho por LABStudio.pna.</p>
+        <div class="logo-name">Farma<em>IA</em></div>
+        <p>Calculá copagos, detectá interacciones y validá recetas electrónicas con IA. Hecho por LABStudio.pna.</p>
       </div>
       <div class="foot-links">
-        <b style="color:#fff;font-size:13px;">Producto</b><br><br>
+        <b>Producto</b>
         <a href="#features">Características</a>
         <a href="#pricing">Precios</a>
+        <a href="guia-completa.html">Guía Completa</a>
       </div>
       <div class="foot-links">
-        <b style="color:#fff;font-size:13px;">Soporte</b><br><br>
-        <a href="guia-completa.html">Guía completa</a>
+        <b>Soporte</b>
         <a href="https://wa.me/5493435344597?text=Hola,%20quiero%20info%20sobre%20FarmaIA">WhatsApp</a>
         <a href="#faq">FAQ</a>
-        <a href="#contacto">Escribinos</a>
         <a href="terminos.html">Términos y Privacidad</a>
       </div>
     </div>
     <div class="foot-bottom">
       <span>© 2026 FarmaIA · Todos los derechos reservados</span>
-      <span>Desarrollado por<a href="https://labstudiopna.github.io" target="_blank">LABStudio.pna</a>· Paraná, Entre Ríos, Argentina</span>
+      <span>Desarrollado por <a href="https://labstudiopna.github.io" target="_blank">LABStudio.pna</a> · Paraná, Entre Ríos, Argentina</span>
     </div>
   </div>
 </footer>
 
 <script>
-  const toggle = document.getElementById('themeToggle');
-  const root = document.documentElement;
-  function applyTheme(t){ root.setAttribute('data-theme', t); toggle.textContent = t === 'dark' ? '☀️' : '🌙'; }
-  applyTheme('light');
-  toggle.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme');
-    applyTheme(current === 'dark' ? 'light' : 'dark');
+function toggleMobileMenu(){
+  document.getElementById('hamburger').classList.toggle('active');
+  document.getElementById('mobile-menu').classList.toggle('active');
+}
+function closeMobileMenu(){
+  document.getElementById('hamburger').classList.remove('active');
+  document.getElementById('mobile-menu').classList.remove('active');
+}
+document.querySelector('.logo').addEventListener('click', closeMobileMenu);
+
+function toggleFaq(el){
+  const item=el.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faqitem').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+(function(){
+  const isTouch = window.matchMedia('(hover: none)').matches;
+  const cards = document.querySelectorAll('.bento, .hb-tile');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      if (isTouch) return;
+      const rx = (((e.clientY - r.top) / r.height) - 0.5) * -4;
+      const ry = (((e.clientX - r.left) / r.width) - 0.5) * 4;
+      card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-2px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateY(0)';
+    });
   });
+})();
 
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const navlinksEl = document.querySelector('.navlinks');
-  if (hamburgerBtn && navlinksEl) {
-    hamburgerBtn.addEventListener('click', () => {
-      const isOpen = navlinksEl.classList.toggle('open');
-      hamburgerBtn.textContent = isOpen ? '✕' : '☰';
-    });
-    navlinksEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      navlinksEl.classList.remove('open');
-      hamburgerBtn.textContent = '☰';
-    }));
-  }
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.bento, .step, .plan, .hb-tile').forEach(el => {
+  el.style.opacity = '0'; el.style.transform = 'translateY(16px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease';
+  obs.observe(el);
+});
 
-  const cfForm = document.getElementById('contactForm');
-  const cfSuccess = document.getElementById('cfSuccess');
-  if (cfForm) {
-    cfForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = cfForm.querySelector('button[type="submit"]');
-      const originalText = btn.textContent;
-      btn.textContent = 'Enviando...';
-      btn.disabled = true;
-      try {
-        const res = await fetch(cfForm.action, {
-          method: 'POST',
-          body: new FormData(cfForm),
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          cfForm.reset();
-          cfSuccess.style.display = 'block';
-        } else {
-          alert('No se pudo enviar. Probá de nuevo o escribinos por WhatsApp.');
-        }
-      } catch (err) {
-        alert('No se pudo enviar. Probá de nuevo o escribinos por WhatsApp.');
-      } finally {
-        btn.textContent = originalText;
-        btn.disabled = false;
-      }
-    });
-  }
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('cform-submit');
+    const status = document.getElementById('cform-status');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    status.className = 'cform-status show';
+    status.textContent = '';
+    try {
+      const res = await fetch(contactForm.action, { method: 'POST', body: new FormData(contactForm), headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        status.className = 'cform-status show ok';
+        status.textContent = '¡Listo! Te respondemos a la brevedad.';
+        contactForm.reset();
+      } else { throw new Error('error'); }
+    } catch (err) {
+      status.className = 'cform-status show err';
+      status.textContent = 'No pudimos enviar el mensaje. Escribinos por WhatsApp.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensaje';
+    }
+  });
+}
 </script>
 </body>
 </html>
