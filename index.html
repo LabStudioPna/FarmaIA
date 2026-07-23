@@ -1,1867 +1,349 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FarmaIA — Tu asistente farmacéutico experto en IA</title>
-    <meta name="description" content="Validá recetas electrónicas, calculá copagos de obras sociales, detectá interacciones medicamentosas y gestioná tu stock. Sin instalación, sin backend propio.">
-    <meta property="og:title" content="FarmaIA — Tu asistente farmacéutico experto en IA">
-    <meta property="og:description" content="Validá recetas, calculá copagos, detectá interacciones. Todo en segundos, sin instalar nada.">
-    <meta property="og:image" content="https://labstudiopna.github.io/FarmaIA/FarmaIA.png">
-    <meta property="og:type" content="website">
-    <link rel="icon" type="image/png" href="FarmaIA.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #111118;
-            --bg-card: #16161f;
-            --bg-card-hover: #1c1c28;
-            --bg-input: #0d0d14;
-            --text-primary: #f0f0f5;
-            --text-secondary: #a0a0b0;
-            --text-muted: #6b6b7b;
-            --accent-teal: #14b8a6;
-            --accent-cyan: #06b6d4;
-            --accent-green: #22c55e;
-            --accent-yellow: #f59e0b;
-            --accent-red: #ef4444;
-            --accent-gradient: linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #22c55e 100%);
-            --border: rgba(255,255,255,0.06);
-            --border-hover: rgba(255,255,255,0.12);
-            --border-focus: rgba(20,184,166,0.4);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* ===== NAV ===== */
-        nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            padding: 1rem 2rem;
-            background: rgba(10,10,15,0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            font-weight: 800;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-
-        .nav-logo img {
-            width: 32px; height: 32px;
-            border-radius: 8px;
-        }
-
-        .nav-logo span {
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-cta {
-            background: var(--accent-gradient);
-            color: white;
-            padding: 0.5rem 1.2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-decoration: none;
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 8rem 2rem 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 70% 80%, rgba(34,197,94,0.06) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1.2rem;
-            border-radius: 100px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-badge .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 800;
-            line-height: 1.05;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 .gradient {
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            color: var(--text-secondary);
-            max-width: 650px;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-context {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin-bottom: 2.5rem;
-            position: relative;
-            z-index: 1;
-            padding: 1rem 1.5rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .hero-context strong {
-            color: var(--accent-teal);
-        }
-
-        .hero-cta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.9rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--accent-gradient);
-            color: white;
-            box-shadow: 0 4px 24px rgba(20,184,166,0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(20,184,166,0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-hover);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* ===== SECTIONS COMMON ===== */
-        section {
-            padding: 6rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header h2 {
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-        }
-
-        .section-header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .section-label {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--accent-teal);
-            margin-bottom: 1rem;
-        }
-
-        /* ===== AGENT INTERFACE ===== */
-        .agent-section {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 2rem;
-            border: 1px solid var(--border);
-            max-width: 900px;
-            margin: 0 auto 4rem;
-        }
-
-        .agent-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 1.5rem;
-        }
-
-        .agent-header img {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-        }
-
-        .agent-header .info h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .agent-header .info p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .agent-status {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.8rem;
-            color: var(--accent-green);
-        }
-
-        .agent-status.offline {
-            color: var(--accent-red);
-        }
-
-        .agent-status .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        /* API Key Input */
-        .api-setup {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .api-setup h4 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .api-setup p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .api-input-group {
-            display: flex;
-            gap: 0.75rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .api-input-group input {
-            flex: 1;
-            padding: 0.9rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .api-input-group input:focus {
-            outline: none;
-            border-color: var(--accent-teal);
-            box-shadow: 0 0 0 3px var(--border-focus);
-        }
-
-        .api-input-group input::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* Chat */
-        .chat-container {
-            display: none;
-            flex-direction: column;
-            gap: 1rem;
-            max-height: 600px;
-        }
-
-        .chat-container.active {
-            display: flex;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            padding-right: 0.5rem;
-            max-height: 450px;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: var(--border-hover);
-            border-radius: 3px;
-        }
-
-        .msg {
-            max-width: 85%;
-            padding: 1rem 1.2rem;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .msg-user {
-            align-self: flex-end;
-            background: var(--accent-teal);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .msg-bot {
-            align-self: flex-start;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-bottom-left-radius: 4px;
-        }
-
-        .msg-bot .highlight { color: var(--accent-green); font-weight: 600; }
-        .msg-bot .warning { color: var(--accent-yellow); font-weight: 600; }
-        .msg-bot .danger { color: var(--accent-red); font-weight: 600; }
-        .msg-bot .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.4rem 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-        }
-        .msg-bot .data-row:last-child { border-bottom: none; }
-        .msg-bot .data-label { color: var(--text-muted); }
-        .msg-bot .data-value { color: var(--text-primary); font-weight: 500; }
-        .msg-bot .badge {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 0.3rem;
-        }
-        .badge-green { background: rgba(34,197,94,0.15); color: #22c55e; }
-        .badge-yellow { background: rgba(245,158,11,0.15); color: #f59e0b; }
-        .badge-red { background: rgba(239,68,68,0.15); color: #ef4444; }
-
-        .chat-input-area {
-            display: flex;
-            gap: 0.75rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            padding: 0.9rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .chat-input-area input:focus {
-            outline: none;
-            border-color: var(--accent-teal);
-            box-shadow: 0 0 0 3px var(--border-focus);
-        }
-
-        .chat-input-area .btn {
-            padding: 0.9rem 1.5rem;
-            white-space: nowrap;
-        }
-
-        .typing-indicator {
-            display: none;
-            align-self: flex-start;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            border-bottom-left-radius: 4px;
-            padding: 1rem 1.5rem;
-            gap: 0.3rem;
-        }
-
-        .typing-indicator.active {
-            display: flex;
-        }
-
-        .typing-indicator span {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
-
-        .quick-action {
-            padding: 0.4rem 0.9rem;
-            border-radius: 100px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-action:hover {
-            border-color: var(--accent-teal);
-            color: var(--text-primary);
-        }
-
-        /* Tools Panel */
-        .tools-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .tool-btn {
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .tool-btn:hover {
-            border-color: var(--accent-teal);
-            color: var(--text-primary);
-            background: var(--bg-card-hover);
-        }
-
-        .tool-btn .icon { font-size: 1.1rem; }
-
-        /* ===== PROBLEM ===== */
-        .problem-section {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 4rem 3rem;
-            border: 1px solid var(--border);
-        }
-
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .problem-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .problem-card:hover {
-            border-color: var(--accent-teal);
-            transform: translateY(-3px);
-        }
-
-        .problem-card .icon { font-size: 2rem; margin-bottom: 1rem; }
-        .problem-card h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; color: var(--accent-cyan); }
-        .problem-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
-
-        /* ===== FEATURES ===== */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .feature-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent-teal);
-            transform: translateY(-4px);
-        }
-
-        .feature-card .icon {
-            font-size: 1.8rem;
-            width: 48px; height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .feature-card h3 { font-size: 1.1rem; font-weight: 600; }
-        .feature-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
-
-        .feature-card .tag {
-            display: inline-block;
-            margin-top: auto;
-            padding: 0.3rem 0.8rem;
-            background: rgba(20,184,166,0.1);
-            color: var(--accent-teal);
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 100px;
-            width: fit-content;
-        }
-
-        .feature-card .tag-soon {
-            background: rgba(107,107,123,0.15);
-            color: var(--text-muted);
-        }
-
-        /* ===== PROCESS ===== */
-        .process-section {
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 4rem 3rem;
-            border: 1px solid var(--border);
-        }
-
-        .process-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .process-step { text-align: center; }
-
-        .process-step .number {
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--accent-teal);
-            margin: 0 auto 1.2rem;
-        }
-
-        .process-step h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .process-step p { font-size: 0.9rem; color: var(--text-secondary); }
-
-        /* ===== PRICING ===== */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .pricing-card:hover { border-color: var(--accent-teal); }
-
-        .pricing-card.featured {
-            border-color: var(--accent-teal);
-            position: relative;
-        }
-
-        .pricing-card.featured::before {
-            content: 'RECOMENDADO';
-            position: absolute;
-            top: -12px; left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-gradient);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            padding: 0.4rem 1rem;
-            border-radius: 100px;
-        }
-
-        .pricing-card h3 { font-size: 1.3rem; font-weight: 700; }
-
-        .pricing-card .price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .pricing-card .price-period { font-size: 0.9rem; color: var(--text-muted); }
-
-        .pricing-card ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-        }
-
-        .pricing-card ul li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.6rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .pricing-card ul li::before {
-            content: '✓';
-            color: var(--accent-green);
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .pricing-card .btn { margin-top: auto; justify-content: center; }
-
-        /* ===== FAQ ===== */
-        .faq-section { max-width: 800px; margin: 0 auto; }
-
-        .faq-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-
-        .faq-question {
-            padding: 1.2rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .faq-question:hover { background: var(--bg-card); }
-
-        .faq-answer {
-            padding: 0 1.5rem 1.5rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.7;
-            display: none;
-        }
-
-        .faq-item.open .faq-answer { display: block; }
-        .faq-item.open .faq-question .toggle { transform: rotate(45deg); }
-
-        /* ===== CONTACT ===== */
-        .contact-section {
-            text-align: center;
-            background: var(--bg-secondary);
-            border-radius: 24px;
-            padding: 4rem 2rem;
-            border: 1px solid var(--border);
-        }
-
-        .contact-section h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
-        .contact-section p { color: var(--text-secondary); margin-bottom: 2rem; }
-        .contact-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-
-        /* ===== FOOTER ===== */
-        footer {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border);
-        }
-
-        footer a { color: var(--accent-teal); text-decoration: none; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
-            .process-grid { grid-template-columns: 1fr; }
-            .pricing-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .api-input-group { flex-direction: column; }
-            .chat-input-area { flex-direction: column; }
-        }
-
-        @media (max-width: 600px) {
-            section { padding: 4rem 1.5rem; }
-            .problem-section, .process-section { padding: 3rem 1.5rem; }
-            .hero { padding: 7rem 1.5rem 3rem; }
-            .agent-section { padding: 1.5rem; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmaIA — Tu asistente de farmacia experto en IA</title>
+<meta name="description" content="Calculá copagos por obra social, detectá interacciones entre medicamentos, validá recetas electrónicas y controlá stock con IA. El asistente para farmacias argentinas. Sin instalación, sin complicaciones.">
+
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#0E8C7F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FarmaIA">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="FarmaIA — Tu asistente de farmacia experto en IA">
+<meta property="og:description" content="Calculá copagos, detectá interacciones y validá recetas electrónicas con IA. Sin instalación, sin complicaciones.">
+<meta property="og:image" content="https://labstudiopna.github.io/FarmaIA/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://labstudiopna.github.io/FarmaIA/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FarmaIA — Tu asistente de farmacia experto en IA">
+<meta name="twitter:description" content="Calculá copagos, detectá interacciones y validá recetas electrónicas con IA.">
+<meta name="twitter:image" content="https://labstudiopna.github.io/FarmaIA/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="tracker.js" defer></script>
 </head>
 <body>
 
-    <!-- ===== NAV ===== -->
-    <nav>
-        <a href="#" class="nav-logo">
-            <img src="FarmaIA.png" alt="FarmaIA">
-            <span>FarmaIA</span>
-        </a>
-        <div class="nav-links">
-            <a href="#agente">Agente</a>
-            <a href="#funciones">Funciones</a>
-            <a href="#precios">Precios</a>
-            <a href="#faq">FAQ</a>
-            <a href="https://labstudiopna.github.io/" class="nav-cta">← LABStudio</a>
+<header class="site">
+  <nav class="nav">
+    <a href="#" class="brand"><img src="favicon-192.png" alt="FarmaIA"> Farma<span class="ia">IA</span></a>
+    <div class="navlinks">
+      <a href="#features">Características</a>
+      <a href="#pricing">Precios</a>
+      <a href="guia-completa.html">📚 Guía Completa</a>
+      <a href="#contacto">Contacto</a>
+      <a href="agente-farmacia.html" class="mobile-only-cta">Ir al Agente →</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" title="Modo claro/oscuro">🌙</button>
+      <a href="agente-farmacia.html" class="btn btn-primary">Ir al Agente →</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú">☰</button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="pill">💊 Hecho en Paraná, para farmacias argentinas</span>
+      <h1>Tu asistente de farmacia <span>experto en IA</span></h1>
+      <p class="lead">Calculá copagos por obra social, detectá interacciones entre medicamentos y validá recetas electrónicas en segundos. Sin instalación, sin complicaciones — igual de simple que abrir WhatsApp.</p>
+      <div class="hero-cta">
+        <a href="agente-farmacia.html" class="btn btn-primary">Prueba 7 días gratis →</a>
+        <a href="#features" class="btn btn-ghost">Ver características</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>Al instante</b><span>Copago calculado por obra social</span></div>
+        <div class="stat"><b>6</b><span>Comandos listos: copago, interacciones, receta y más</span></div>
+        <div class="stat"><b>0%</b><span>Instalación</span></div>
+        <div class="stat"><b>100%</b><span>Corre en tu navegador — nada en servidores de terceros</span></div>
+      </div>
+    </div>
+    <div class="mock">
+      <div class="mock-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; farmaia.labstudiopna.github.io</div>
+      <div class="mock-body">
+        <div class="msg user">Calcular copago OSDE para Atorvastatina</div>
+        <div class="msg bot"><b>FarmaIA:</b> Buscando cobertura vigente de OSDE para Atorvastatina 20mg...</div>
+        <div class="mock-result">✓ Cobertura: 40% &nbsp;|&nbsp; PVP: $18.400 &nbsp;|&nbsp; Copago del afiliado: $11.040<br>⚠️ Verificá receta electrónica antes de dispensar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <div class="banner">
+      <div>
+        <h3>💊 Seis comandos, un mismo chat</h3>
+        <p>Copago, interacciones, validación de receta, vademécum, normativa ANMAT y stock — todo desde el mismo cuadro de texto, sin cambiar de pantalla.</p>
+      </div>
+      <a href="agente-farmacia.html" class="btn btn-accent">Probar el chat →</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Suite de herramientas</span>
+      <h2>Todo lo que hoy resolvés a mano o llamando a la obra social</h2>
+      <p class="muted">Nada de "IA que opina la dosis". Cada comando produce un dato o una guía lista para usar en el mostrador.</p>
+    </div>
+    <div class="grid cols-4">
+      <div class="card"><span class="icon">💬</span><h3>Chat farmacéutico IA</h3><p>Preguntas libres sobre medicamentos, interacciones y normativa vigente — el mismo chat resuelve los seis comandos.</p></div>
+      <div class="card"><span class="icon">💰</span><h3>Cálculo de copago <span class="badge">/copago</span></h3><p>Copago exacto por obra social (OSDE, IOSPER, PAMI y más) para cualquier medicamento, al instante.</p></div>
+      <div class="card"><span class="icon">⚠️</span><h3>Interacciones medicamentosas <span class="badge">/interacciones</span></h3><p>Cruce automático entre medicamentos para alertar antes de dispensar, con la gravedad de cada interacción.</p></div>
+      <div class="card"><span class="icon">📋</span><h3>Validación de receta <span class="badge">/validar</span></h3><p>Guía paso a paso para validar una receta electrónica antes de despachar, sin dudas de último momento.</p></div>
+      <div class="card"><span class="icon">📖</span><h3>Vademécum instantáneo <span class="badge">/vademecum</span></h3><p>Dosis, indicaciones y contraindicaciones de cualquier droga, sin buscar en otro lado.</p></div>
+      <div class="card"><span class="icon">🏛️</span><h3>Normativa ANMAT <span class="badge">/anmat</span></h3><p>Regulación vigente sobre recetas y dispensa, actualizada, sin perder tiempo buscando en el boletín oficial.</p></div>
+      <div class="card"><span class="icon">📦</span><h3>Control de stock <span class="badge">/stock</span></h3><p>Alertas de stock bajo antes de quedarte sin un medicamento clave en el mostrador.</p></div>
+      <div class="card"><span class="icon">📅</span><h3>Vencimientos con semáforo</h3><p>Vencimientos de convenios y habilitaciones en rojo/naranja/verde, para no perder ningún plazo.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg-alt);">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Flujo simple</span>
+      <h2>Tres pasos hasta la respuesta</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>Cargá tu API key de Anthropic</h4>
+        <p>Creás cuenta gratis en console.anthropic.com, generás una key y la pegás en FarmaIA. Nadie ve tu clave, solo vos.</p>
+        <span class="time">1 minuto</span>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>Escribí tu consulta o comando</h4>
+        <p>"Calcular copago OSDE para Atorvastatina" o cualquiera de los seis comandos, en lenguaje natural.</p>
+        <span class="time">Segundos</span>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>Recibí la respuesta lista para usar</h4>
+        <p>Copago, alerta de interacción o guía de validación, lista para aplicar en el mostrador.</p>
+        <span class="time">Instantáneo</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--bg-alt);">
+  <div class="container">
+    <div class="quote">
+      <p>"Antes llamaba a la obra social para confirmar un copago dudoso. Ahora lo tengo en el chat antes de que el cliente termine de sacarse el barbijo."</p>
+      <div class="who"><b>Farmacéutica</b> — Farmacia de barrio, Entre Ríos</div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Transparente y sin sorpresas</span>
+      <h2>Planes flexibles</h2>
+      <p class="muted">El costo de la IA lo pagás directamente a Anthropic. FarmaIA es la plataforma que lo hace farmacéutico.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="plan">
+        <h3>Uso propio</h3>
+        <div class="price">Gratis</div>
+        <p class="desc">Acceso completo · pagás solo la API (~USD 0.01–0.02 por consulta)</p>
+        <ul>
+          <li>Chat farmacéutico IA</li>
+          <li>Cálculo de copago por obra social</li>
+          <li>Detección de interacciones</li>
+          <li>Validación de recetas y vademécum</li>
+        </ul>
+        <a href="agente-farmacia.html" class="btn btn-ghost">Empezar gratis</a>
+      </div>
+      <div class="plan">
+        <h3>Farmacia</h3>
+        <div class="price">USD 70<small>/mes</small></div>
+        <p class="desc">Por farmacia · hasta 5 usuarios</p>
+        <ul>
+          <li>Todo de Uso propio</li>
+          <li>Normativa ANMAT actualizada automáticamente</li>
+          <li>Control de stock con alertas</li>
+          <li>Soporte por WhatsApp (24 hs)</li>
+          <li>Onboarding personalizado</li>
+        </ul>
+        <a href="agente-farmacia.html" class="btn btn-primary">Contratar plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="background:var(--bg-alt);">
+  <div class="container" style="max-width:760px;">
+    <div class="section-head">
+      <span class="eyebrow">Lo que más nos preguntan</span>
+      <h2>Preguntas frecuentes</h2>
+    </div>
+    <details class="faq-item">
+      <summary>¿Qué es una API key y cuánto cuesta?</summary>
+      <p>Es una clave personal para usar la IA de Anthropic. Creás cuenta gratis en console.anthropic.com, cargás crédito y generás tu key. Con USD 5 hacés varios cientos de consultas.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿Los datos de mis clientes son privados?</summary>
+      <p>Sí. FarmaIA no tiene backend propio. Tu API key y las consultas van directo de tu navegador a Anthropic. Al cerrar la pestaña, todo se borra del dispositivo salvo lo que decidas guardar.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿Reemplaza al farmacéutico?</summary>
+      <p>No. Es una herramienta de apoyo. Acelera cálculos y detecta alertas, pero la validación final de cualquier dispensa siempre es de un profesional matriculado.</p>
+    </details>
+    <details class="faq-item">
+      <summary>¿Funciona en el celular?</summary>
+      <p>Sí, es responsive. Funciona bien en smartphone y tablet detrás del mostrador, sin instalar ninguna app.</p>
+    </details>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta-final">
+      <h2>Probalo ahora, gratis</h2>
+      <p>Sin registro, sin tarjeta. Solo tu API key y listo.</p>
+      <div class="hero-cta">
+        <a href="agente-farmacia.html" class="btn btn-accent">Abrir FarmaIA →</a>
+        <a href="guia-completa.html" class="btn btn-ghost" style="border-color:rgba(255,255,255,.3);">📚 Leer documentación</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">¿Tenés dudas?</span>
+      <h2>Escribinos</h2>
+      <p class="muted">¿Tenés una pregunta o una propuesta para tu farmacia? Contanos y te respondemos a la brevedad.</p>
+    </div>
+    <form class="waitlist" id="contactForm" action="https://formspree.io/f/mqererkb" method="POST">
+      <div class="row">
+        <div>
+          <label for="cf-name">Nombre</label>
+          <input id="cf-name" type="text" name="name" required placeholder="Tu nombre">
         </div>
-    </nav>
-
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-        <div class="hero-badge">
-            <span class="dot"></span>
-            Hecho en Paraná, para farmacias argentinas
+        <div>
+          <label for="cf-email">Email</label>
+          <input id="cf-email" type="email" name="email" required placeholder="vos@email.com">
         </div>
-        <h1>Tu farmacéutico<br>de guardia, <span class="gradient">siempre.</span></h1>
-        <p class="hero-subtitle">
-            Validá recetas electrónicas, calculá copagos de obras sociales, detectá interacciones medicamentosas 
-            y gestioná tu stock — todo en segundos, sin instalar nada.
-        </p>
-        <div class="hero-context">
-            <strong>Contexto Argentina 2026:</strong> La receta electrónica es obligatoria desde enero 2025 
-            (Decreto 345/2024 + Resolución 2214/2025). Las farmacias que no se adaptan pierden tiempo 
-            validando manualmente con cada obra social. FarmaIA lo automatiza.
+      </div>
+      <div class="row">
+        <div class="full">
+          <label for="cf-whatsapp">WhatsApp (opcional)</label>
+          <input id="cf-whatsapp" type="tel" name="whatsapp" placeholder="+54 9 343...">
         </div>
-        <div class="hero-cta">
-            <a href="#agente" class="btn btn-primary">Probar el agente →</a>
-            <a href="#funciones" class="btn btn-secondary">Ver funciones</a>
+      </div>
+      <div class="row">
+        <div class="full">
+          <label for="cf-msg">Mensaje</label>
+          <textarea id="cf-msg" name="message" required placeholder="Contanos qué necesitás..."></textarea>
         </div>
-    </section>
+      </div>
+      <input type="hidden" name="_subject" value="Nuevo contacto — FarmaIA">
+      <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+      <div class="form-success" id="cfSuccess">✓ ¡Listo! Recibimos tu mensaje, te respondemos a la brevedad.</div>
+    </form>
+  </div>
+</section>
 
-    <!-- ===== AGENT INTERFACE ===== -->
-    <section id="agente">
-        <div class="section-header">
-            <span class="section-label">Agente IA</span>
-            <h2>Probá FarmaIA ahora mismo.</h2>
-            <p>Solo necesitás una API key de Anthropic. Tus datos nunca pasan por nuestros servidores.</p>
-        </div>
+<footer class="site">
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="brand"><img src="favicon-192.png" alt="FarmaIA" style="width:30px;height:30px;"> Farma<span class="ia" style="color:var(--accent-light);">IA</span></a>
+        <p style="margin-top:12px;max-width:320px;">Calculá copagos, detectá interacciones y validá recetas electrónicas con IA. Hecho por LABStudio.pna.</p>
+      </div>
+      <div class="foot-links">
+        <b style="color:#fff;font-size:13px;">Producto</b><br><br>
+        <a href="#features">Características</a>
+        <a href="#pricing">Precios</a>
+      </div>
+      <div class="foot-links">
+        <b style="color:#fff;font-size:13px;">Soporte</b><br><br>
+        <a href="guia-completa.html">Guía completa</a>
+        <a href="https://wa.me/5493435344597?text=Hola,%20quiero%20info%20sobre%20FarmaIA">WhatsApp</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contacto">Escribinos</a>
+        <a href="terminos.html">Términos y Privacidad</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 FarmaIA · Todos los derechos reservados</span>
+      <span>Desarrollado por<a href="https://labstudiopna.github.io" target="_blank">LABStudio.pna</a>· Paraná, Entre Ríos, Argentina</span>
+    </div>
+  </div>
+</footer>
 
-        <div class="agent-section">
-            <div class="agent-header">
-                <img src="FarmaIA.png" alt="FarmaIA">
-                <div class="info">
-                    <h3>FarmaIA</h3>
-                    <p>Asistente farmacéutico · v1.0</p>
-                </div>
-                <div class="agent-status" id="agentStatus">
-                    <span class="dot"></span>
-                    <span id="statusText">Esperando API key</span>
-                </div>
-            </div>
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  function applyTheme(t){ root.setAttribute('data-theme', t); toggle.textContent = t === 'dark' ? '☀️' : '🌙'; }
+  applyTheme('light');
+  toggle.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
 
-            <!-- API Setup -->
-            <div class="api-setup" id="apiSetup">
-                <h4>🔑 Configurá tu API key</h4>
-                <p>Creá una cuenta gratis en <a href="https://console.anthropic.com" target="_blank" style="color: var(--accent-teal);">console.anthropic.com</a>, generá una key y pegala acá. Nadie la ve excepto vos.</p>
-                <div class="api-input-group">
-                    <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
-                    <button class="btn btn-primary" onclick="saveApiKey()">Conectar →</button>
-                </div>
-                <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
-                    💡 Con USD 5 de crédito hacés varios cientos de consultas (~$0.01 por consulta)
-                </p>
-            </div>
-
-            <!-- Chat -->
-            <div class="chat-container" id="chatContainer">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="msg msg-bot">
-                        <span class="highlight">👋 ¡Hola! Soy FarmaIA.</span><br><br>
-                        Estoy listo para ayudarte con:<br>
-                        • Validación de recetas electrónicas<br>
-                        • Cálculo de copagos por obra social<br>
-                        • Detección de interacciones medicamentosas<br>
-                        • Consultas sobre normativa ANMAT<br>
-                        • Control de stock y vencimientos<br><br>
-                        ¿Qué necesitás resolver hoy?
-                    </div>
-                </div>
-
-                <div class="typing-indicator" id="typingIndicator">
-                    <span></span><span></span><span></span>
-                </div>
-
-                <div class="quick-actions" id="quickActions">
-                    <button class="quick-action" onclick="sendQuick('Validar receta: Enalapril 10mg, Metformina 500mg, paciente OSDE')">📝 Validar receta</button>
-                    <button class="quick-action" onclick="sendQuick('Calcular copago PAMI para Atorvastatina 20mg')">💳 Copago PAMI</button>
-                    <button class="quick-action" onclick="sendQuick('¿Hay interacción entre Warfarina y Aspirina?')">⚡ Interacciones</button>
-                    <button class="quick-action" onclick="sendQuick('¿Qué dice la normativa sobre receta electrónica?')">📋 Normativa</button>
-                </div>
-
-                <div class="tools-panel" id="toolsPanel">
-                    <button class="tool-btn" onclick="sendQuick('/validar')">
-                        <span class="icon">📄</span> Validar receta
-                    </button>
-                    <button class="tool-btn" onclick="sendQuick('/copago')">
-                        <span class="icon">🧮</span> Calcular copago
-                    </button>
-                    <button class="tool-btn" onclick="sendQuick('/interacciones')">
-                        <span class="icon">⚡</span> Interacciones
-                    </button>
-                    <button class="tool-btn" onclick="sendQuick('/vademecum')">
-                        <span class="icon">📚</span> Consultar vademécum
-                    </button>
-                    <button class="tool-btn" onclick="sendQuick('/stock')">
-                        <span class="icon">📦</span> Control stock
-                    </button>
-                    <button class="tool-btn" onclick="sendQuick('/anmat')">
-                        <span class="icon">🏛️</span> Normativa ANMAT
-                    </button>
-                </div>
-
-                <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="Escribí tu consulta farmacéutica..." onkeypress="handleKeyPress(event)">
-                    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">Enviar →</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== PROBLEM ===== -->
-    <section class="problem-section" id="problema">
-        <div class="section-header">
-            <span class="section-label">El problema</span>
-            <h2>Lo que hoy te frena detrás del mostrador</h2>
-        </div>
-        <div class="problem-grid">
-            <div class="problem-card">
-                <div class="icon">📝</div>
-                <h4>Receta electrónica, validación manual</h4>
-                <p>Cada receta digital requiere entrar al sistema de la obra social, validar firma, verificar cobertura. 3-5 minutos por receta. En un turno de 50 recetas, son horas.</p>
-            </div>
-            <div class="problem-card">
-                <div class="icon">💳</div>
-                <h4>Copagos que cambian todo el tiempo</h4>
-                <p>Cada obra social tiene sus propios copagos, topes y excepciones. Un error de cálculo te cuesta plata o un cliente enojado.</p>
-            </div>
-            <div class="problem-card">
-                <div class="icon">⚠️</div>
-                <h4>Interacciones que no ves</h4>
-                <p>El paciente trae 4 recetas de 2 médicos distintos. ¿Hay interacciones? ¿Duplicaciones? Hoy lo resolvés de memoria o no lo resolvés.</p>
-            </div>
-            <div class="problem-card">
-                <div class="icon">📦</div>
-                <h4>Stock que se vence sin aviso</h4>
-                <p>Medicamentos que se acercan al vencimiento, faltantes que descubrís cuando el cliente ya está en el mostrador. Pérdida de dinero y ventas.</p>
-            </div>
-            <div class="problem-card">
-                <div class="icon">📞</div>
-                <h4>Llamadas que interrumpen todo</h4>
-                <p>"¿Tienen tal medicamento?" "¿A qué hora cierran?" "¿Está lista mi receta?" El teléfono no para y te saca de foco cada 5 minutos.</p>
-            </div>
-            <div class="problem-card">
-                <div class="icon">📋</div>
-                <h4>Trazabilidad que exige ANMAT</h4>
-                <p>La normativa exige registrar cada dispensación. Hoy eso significa doble carga: el sistema de la farmacia + el papel para auditoría.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FEATURES ===== -->
-    <section id="funciones">
-        <div class="section-header">
-            <span class="section-label">Suite de herramientas</span>
-            <h2>Todo lo que hoy resolvés a mano,<br>en <span class="gradient">segundos.</span></h2>
-            <p>Nada de "IA que opina de medicamentos". Cada módulo produce un dato, un cálculo o un documento listo para usar.</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="icon">💬</div>
-                <h3>Chat farmacéutico IA</h3>
-                <p>Preguntas libres sobre vademécum, dosis, contraindicaciones, normativa ANMAT. Adjuntá una receta y seguí la charla. El agente tiene acceso a fuentes oficiales actualizadas.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📄</div>
-                <h3>Validador de recetas electrónicas</h3>
-                <p>Subí el PDF o QR de la receta digital. El agente extrae datos, valida firma digital, verifica cobertura con la obra social y te dice si está todo en orden antes de dispensar.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🧮</div>
-                <h3>Calculadora de copagos</h3>
-                <p>Seleccioná la obra social y el medicamento. El agente calcula el copago exacto, descuentos por discapacidad, PAMI, o programas especiales. Actualizado con normativa vigente.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">⚡</div>
-                <h3>Detector de interacciones</h3>
-                <p>Cargá los medicamentos que el paciente está tomando. El agente cruza contra la base de interacciones y alerta en tiempo real: contraindicaciones, duplicaciones, ajustes de dosis.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📦</div>
-                <h3>Control de stock y vencimientos</h3>
-                <p>Registrá tu inventario o conectá tu sistema. Alertas automáticas por vencimiento próximo, stock bajo, y sugerencias de reposición basadas en rotación histórica.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📅</div>
-                <h3>Vencimientos ANMAT con semáforo</h3>
-                <p>Registro sanitario de medicamentos, fechas de vencimiento de habilitaciones, recordatorios de capacitaciones obligatorias. Todo en un panel de semáforo: verde, naranja, rojo.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📊</div>
-                <h3>Reportes de dispensación</h3>
-                <p>Generá reportes mensuales de dispensación por obra social, por medicamento, por período. Listos para auditoría o para presentar a las obras sociales. Exportá en PDF o Excel.</p>
-                <span class="tag">Disponible</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">📱</div>
-                <h3>Atención de consultas por WhatsApp</h3>
-                <p>Un agente responde disponibilidad, precios, horarios y estado de recetas por WhatsApp. La velocidad de respuesta es lo que más pesa en la retención de clientes.</p>
-                <span class="tag tag-soon">Próximamente</span>
-            </div>
-            <div class="feature-card">
-                <div class="icon">🤖</div>
-                <h3>Asistente de compras a droguerías</h3>
-                <p>El agente analiza tu rotación de stock, detecta faltantes proyectados y arma listas de compra optimizadas para cada droguería con la que trabajás. Incluye comparación de precios.</p>
-                <span class="tag tag-soon">Próximamente</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== PROCESS ===== -->
-    <section class="process-section">
-        <div class="section-header">
-            <span class="section-label">Flujo simple</span>
-            <h2>Tres pasos hasta tu primera validación.</h2>
-        </div>
-        <div class="process-grid">
-            <div class="process-step">
-                <div class="number">01</div>
-                <h4>Cargá tu API key</h4>
-                <p>Creás cuenta gratis en console.anthropic.com, generás una key y la pegás en FarmaIA. Nadie ve tu clave. Solo vos.</p>
-            </div>
-            <div class="process-step">
-                <div class="number">02</div>
-                <h4>Configurá tus obras sociales</h4>
-                <p>Seleccioná las obras sociales con las que trabajás. El agente carga automáticamente los copagos y normativas vigentes.</p>
-            </div>
-            <div class="process-step">
-                <div class="number">03</div>
-                <h4>Empezá a validar</h4>
-                <p>Subí recetas, preguntá por interacciones, calculá copagos. Todo queda registrado en tu panel para auditoría.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== PRICING ===== -->
-    <section id="precios">
-        <div class="section-header">
-            <span class="section-label">Planes</span>
-            <h2>Transparente y sin sorpresas.</h2>
-            <p>El costo de la IA lo pagás directamente a Anthropic. FarmaIA es la plataforma que lo hace farmacéutico.</p>
-        </div>
-        <div class="pricing-grid">
-            <div class="pricing-card">
-                <h3>Uso propio</h3>
-                <div class="price">Gratis</div>
-                <div class="price-period">Acceso completo · pagás solo la API (~USD 0.01–0.02 por consulta)</div>
-                <ul>
-                    <li>Chat farmacéutico IA</li>
-                    <li>Validador de recetas electrónicas</li>
-                    <li>Calculadora de copagos</li>
-                    <li>Detector de interacciones</li>
-                    <li>Control de stock básico</li>
-                    <li>Vencimientos ANMAT</li>
-                </ul>
-                <a href="#agente" class="btn btn-secondary">Empezar gratis</a>
-            </div>
-            <div class="pricing-card featured">
-                <h3>Farmacia</h3>
-                <div class="price">USD 80</div>
-                <div class="price-period">/mes · por farmacia · hasta 5 usuarios</div>
-                <ul>
-                    <li>Todo de Uso propio</li>
-                    <li>Reportes de dispensación mensuales</li>
-                    <li>Soporte por WhatsApp (24 hs)</li>
-                    <li>Onboarding personalizado</li>
-                    <li>Actualizaciones normativas automáticas</li>
-                    <li>Historial extendido (12 meses)</li>
-                    <li>Prioridad para features nuevas</li>
-                </ul>
-                <a href="#contacto" class="btn btn-primary">Contratar plan →</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FAQ ===== -->
-    <section class="faq-section" id="faq">
-        <div class="section-header">
-            <span class="section-label">Preguntas frecuentes</span>
-            <h2>Lo que más nos preguntan.</h2>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Qué es una API key y cuánto cuesta?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                Es una clave personal para usar la IA de Anthropic. Creás cuenta gratis en console.anthropic.com, cargás crédito y generás tu key. Con USD 5 hacés varios cientos de consultas (USD 0.01–0.02 por consulta típica).
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Mis recetas y datos de pacientes son privados?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                Sí. FarmaIA no tiene backend propio. Tu API key y los archivos van directo de tu navegador a Anthropic. Al cerrar la pestaña, todo se borra del dispositivo salvo lo que vos decidís guardar. No almacenamos datos de pacientes en nuestros servidores.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Reemplaza al farmacéutico?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                No. Es una herramienta de apoyo. Acelera validaciones, cálculos y búsqueda de información. La responsabilidad profesional y la decisión final de dispensar siempre es del farmacéutico matriculado.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Funciona con todas las obras sociales?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                Incluimos las principales obras sociales y prepagas de Argentina (PAMI, OSDE, Swiss Medical, Galeno, IOMA, etc.). Si trabajás con una que no está en la base, nos escribís y la agregamos en 24-48 horas.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Funciona en el celular?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                Sí, completamente responsive. Funciona perfecto en smartphone y tablet sin instalar ninguna app. Podés validar recetas desde el mostrador con el celular.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFaq(this)">
-                ¿Cumple con la normativa de receta electrónica?
-                <span class="toggle">+</span>
-            </div>
-            <div class="faq-answer">
-                Sí. FarmaIA está diseñado para operar dentro del marco del Decreto 345/2024 y la Resolución 2214/2025. Validamos firma digital, trazabilidad y requisitos técnicos. La dispensación final siempre requiere la intervención del farmacéutico.
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== CONTACT ===== -->
-    <section class="contact-section" id="contacto">
-        <h2>Empezá a validar más rápido.</h2>
-        <p>Contanos qué necesitás y te respondemos por WhatsApp en el día. Si tenés una farmacia en Entre Ríos, podemos hacer una demo en persona.</p>
-        <div class="contact-cta">
-            <a href="https://wa.me/" class="btn btn-primary">Escribir por WhatsApp →</a>
-            <a href="mailto:contacto@labstudio.pna" class="btn btn-secondary">Enviar email</a>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <p>FarmaIA — Un producto de <a href="https://labstudiopna.github.io/">LABStudio.pna</a> · Paraná, Entre Ríos · 31.73° S · 60.53° O</p>
-        <p style="margin-top: 0.5rem; font-size: 0.8rem;">Hecho con 💊 para farmacias argentinas. Sin backend propio. Tus datos, siempre bajo tu control.</p>
-    </footer>
-
-    <script>
-
-    // ===== BASE DE DATOS LOCAL =====
-    const FARMAIA_DB = {
-        // Copagos por obra social (valores representativos, actualizar según normativa vigente)
-        obrasSociales: {
-            'PAMI': {
-                nombre: 'PAMI',
-                copago: 0,
-                tipo: 'Gratuito',
-                descuentoDiscapacidad: 0,
-                requiereAutorizacion: ['biologicos', 'oncologicos', 'hepatitis'],
-                notas: 'Sin copago para jubilados. Medicamentos de alto costo requieren autorización previa.'
-            },
-            'OSDE': {
-                nombre: 'OSDE',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: ['biologicos', 'oncologicos'],
-                notas: '40% de copago general. 70% de descuento con certificado de discapacidad.'
-            },
-            'SWISS MEDICAL': {
-                nombre: 'Swiss Medical',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: ['biologicos'],
-                notas: '40% de copago. Programa de medicación crónica con descuentos.'
-            },
-            'GALENO': {
-                nombre: 'Galeno',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: ['biologicos'],
-                notas: '40% de copago. Descuentos en farmacias adheridas.'
-            },
-            'IOMA': {
-                nombre: 'IOMA',
-                copago: 0,
-                tipo: 'Gratuito',
-                descuentoDiscapacidad: 0,
-                requiereAutorizacion: ['especial', 'alto_costo'],
-                notas: 'Sin copago para beneficiarios. Autorización previa para medicamentos de alto costo.'
-            },
-            'MEDIFE': {
-                nombre: 'Medifé',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: [],
-                notas: '40% de copago. Programa de cronicidad con beneficios.'
-            },
-            'OMINT': {
-                nombre: 'OMINT',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: ['biologicos'],
-                notas: '40% de copago. Cobertura integral en medicación ambulatoria.'
-            },
-            'LUIS PASTEUR': {
-                nombre: 'Luis Pasteur',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: [],
-                notas: '40% de copago. Programa de adherencia terapéutica.'
-            },
-            'SANCOR SALUD': {
-                nombre: 'Sancor Salud',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: ['biologicos'],
-                notas: '40% de copago. Descuentos en farmacias de la red.'
-            },
-            'OSDEPYM': {
-                nombre: 'OSDEPYM',
-                copago: 0.40,
-                tipo: '40%',
-                descuentoDiscapacidad: 0.70,
-                requiereAutorizacion: [],
-                notas: '40% de copago. Cobertura para monotributistas y autónomos.'
-            }
-        },
-
-        // Interacciones medicamentosas críticas (base simplificada)
-        interacciones: {
-            'WARFARINA': {
-                antagonistas: ['ASPIRINA', 'IBUPROFENO', 'NAPROXENO', 'DICLOFENAC'],
-                potenciadores: ['METRONIDAZOL', 'CIPROFLOXACINO', 'FLUCONAZOL', 'AMIODARONA'],
-                riesgo: 'ALTO',
-                descripcion: 'Aumento del riesgo de sangrado. Requiere monitoreo de INR.'
-            },
-            'METFORMINA': {
-                antagonistas: ['CONTRASTE YODO'],
-                potenciadores: ['ENALAPRIL', 'CAPTOPRIL'],
-                riesgo: 'MEDIO',
-                descripcion: 'Riesgo de acidosis láctica con contraste yodado. Suspender 48h antes.'
-            },
-            'ENALAPRIL': {
-                antagonistas: ['SPIRONOLACTONA', 'LOSARTAN'],
-                potenciadores: ['METFORMINA', 'LITIO'],
-                riesgo: 'MEDIO',
-                descripcion: 'Hiperpotasemia con espironolactona. Riesgo de hipoglucemia con metformina.'
-            },
-            'ATORVASTATINA': {
-                antagonistas: ['GEMFIBROZILO'],
-                potenciadores: ['CLARITROMICINA', 'ITRACONAZOL'],
-                riesgo: 'MEDIO',
-                descripcion: 'Riesgo de rabdomiolisis con gemfibrozilo. Aumento de niveles con macrólidos.'
-            },
-            'AMIODARONA': {
-                antagonistas: ['WARFARINA', 'DIGOXINA'],
-                potenciadores: ['SIMVASTATINA'],
-                riesgo: 'ALTO',
-                descripcion: 'Aumento de niveles de warfarina y digoxina. Toxicidad hepática.'
-            },
-            'LITIO': {
-                antagonistas: ['IBUPROFENO', 'NAPROXENO', 'HIDROCLOROTIAZIDA'],
-                potenciadores: ['ENALAPRIL', 'CAPTOPRIL'],
-                riesgo: 'ALTO',
-                descripcion: 'AINEs y diuréticos reducen eliminación de litio. Riesgo de toxicidad.'
-            },
-            'CLARITROMICINA': {
-                antagonistas: ['ATORVASTATINA', 'SIMVASTATINA'],
-                potenciadores: ['WARFARINA'],
-                riesgo: 'MEDIO',
-                descripcion: 'Inhibición del CYP3A4. Aumento de estatinas y warfarina.'
-            }
-        },
-
-        // Medicamentos de alto costo que requieren autorización
-        medicamentosAltoCosto: [
-            'ADALIMUMAB', 'ETANERCEPT', 'INFLIXIMAB', 'RITUXIMAB', 'TRASTUZUMAB',
-            'BEVACIZUMAB', 'PEMBROLIZUMAB', 'NIVOLUMAB', 'SOFOSBUVIR', 'LEDIPASVIR',
-            'DACLATASVIR', 'VELPATASVIR', 'OCRELIZUMAB', 'NATALIZUMAB', 'FINGOLIMOD'
-        ],
-
-        // Normativa ANMAT clave
-        normativa: {
-            'receta_electronica': {
-                titulo: 'Receta Electrónica',
-                norma: 'Decreto 345/2024 + Resolución 2214/2025',
-                vigencia: 'Obligatoria desde enero 2025',
-                requisitos: [
-                    'Firma digital del prescriptor',
-                    'Validez de 30 días calendario',
-                    'Trazabilidad en sistema nacional',
-                    'Verificación QR obligatoria'
-                ]
-            },
-            'trazabilidad': {
-                titulo: 'Trazabilidad',
-                norma: 'Disposición ANMAT 5268/2017',
-                vigencia: 'Vigente',
-                requisitos: [
-                    'Registro de dispensación en sistema',
-                    'Identificación del farmacéutico',
-                    'Datos del paciente y prescriptor',
-                    'Conservación de registros por 5 años'
-                ]
-            },
-            'medicamentos_controlados': {
-                titulo: 'Medicamentos Controlados',
-                norma: 'Ley 23.737 + Decreto 1990/2011',
-                vigencia: 'Vigente',
-                requisitos: [
-                    'Receta especial en duplicado',
-                    'Identificación del paciente',
-                    'Registro en libro de estupefacientes',
-                    'Límite de 30 días de tratamiento'
-                ]
-            }
-        }
-    };
-
-    // ===== ESTADO =====
-    let apiKey = sessionStorage.getItem('farmaia_api_key') || '';
-    let conversationHistory = JSON.parse(sessionStorage.getItem('farmaia_history') || '[]');
-    let isProcessing = false;
-
-    // ===== INICIALIZACIÓN =====
-    document.addEventListener('DOMContentLoaded', () => {
-        if (apiKey) {
-            showChat();
-            loadHistory();
-        }
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navlinksEl = document.querySelector('.navlinks');
+  if (hamburgerBtn && navlinksEl) {
+    hamburgerBtn.addEventListener('click', () => {
+      const isOpen = navlinksEl.classList.toggle('open');
+      hamburgerBtn.textContent = isOpen ? '✕' : '☰';
     });
+    navlinksEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      navlinksEl.classList.remove('open');
+      hamburgerBtn.textContent = '☰';
+    }));
+  }
 
-    function saveApiKey() {
-        const input = document.getElementById('apiKeyInput');
-        const key = input.value.trim();
-
-        if (!key.startsWith('sk-ant-')) {
-            alert('La API key debe empezar con "sk-ant-". Verificá que la copiaste completa de console.anthropic.com');
-            return;
-        }
-
-        apiKey = key;
-        sessionStorage.setItem('farmaia_api_key', apiKey);
-        showChat();
-        addBotMessage('👋 ¡API key conectada! Ya podés empezar a usar FarmaIA. ¿Qué necesitás resolver hoy?');
-    }
-
-    function showChat() {
-        document.getElementById('apiSetup').style.display = 'none';
-        document.getElementById('chatContainer').classList.add('active');
-        document.getElementById('statusText').textContent = 'Conectado';
-        document.getElementById('agentStatus').classList.remove('offline');
-    }
-
-    function loadHistory() {
-        const container = document.getElementById('chatMessages');
-        container.innerHTML = '';
-        conversationHistory.forEach(msg => {
-            if (msg.role === 'user') {
-                addUserMessage(msg.content, false);
-            } else {
-                addBotMessage(msg.content, false);
-            }
+  const cfForm = document.getElementById('contactForm');
+  const cfSuccess = document.getElementById('cfSuccess');
+  if (cfForm) {
+    cfForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = cfForm.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.textContent = 'Enviando...';
+      btn.disabled = true;
+      try {
+        const res = await fetch(cfForm.action, {
+          method: 'POST',
+          body: new FormData(cfForm),
+          headers: { 'Accept': 'application/json' }
         });
-    }
-
-    // ===== CHAT FUNCTIONS =====
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
-
-    function sendQuick(text) {
-        document.getElementById('chatInput').value = text;
-        sendMessage();
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text || isProcessing) return;
-
-        input.value = '';
-        addUserMessage(text);
-        saveToHistory('user', text);
-
-        showTyping();
-        isProcessing = true;
-
-        try {
-            // Primero: procesar comandos locales
-            const localResponse = processLocalCommand(text);
-            if (localResponse) {
-                await delay(800);
-                hideTyping();
-                addBotMessage(localResponse);
-                saveToHistory('assistant', localResponse);
-                isProcessing = false;
-                return;
-            }
-
-            // Segundo: llamar a Anthropic API
-            const response = await callAnthropic(text);
-            hideTyping();
-            addBotMessage(response);
-            saveToHistory('assistant', response);
-        } catch (error) {
-            hideTyping();
-            addBotMessage('❌ Error: ' + error.message + '. Verificá tu API key o intentá de nuevo en unos segundos.');
+        if (res.ok) {
+          cfForm.reset();
+          cfSuccess.style.display = 'block';
+        } else {
+          alert('No se pudo enviar. Probá de nuevo o escribinos por WhatsApp.');
         }
-
-        isProcessing = false;
-    }
-
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // ===== PROCESAMIENTO LOCAL (sin API) =====
-    function processLocalCommand(text) {
-        const lower = text.toLowerCase();
-
-        // Comando: /copago o "calcular copago"
-        if (lower.includes('/copago') || lower.includes('copago') || lower.includes('cuanto paga')) {
-            return processCopago(text);
-        }
-
-        // Comando: /interacciones o "interacción"
-        if (lower.includes('/interacciones') || lower.includes('interaccion') || lower.includes('interacción')) {
-            return processInteracciones(text);
-        }
-
-        // Comando: /validar o "validar receta"
-        if (lower.includes('/validar') || (lower.includes('validar') && lower.includes('receta'))) {
-            return processValidacion(text);
-        }
-
-        // Comando: /vademecum o "dosis"
-        if (lower.includes('/vademecum') || lower.includes('dosis') || lower.includes('vademecum')) {
-            return processVademecum(text);
-        }
-
-        // Comando: /anmat o "normativa"
-        if (lower.includes('/anmat') || lower.includes('normativa') || lower.includes('ley')) {
-            return processNormativa(text);
-        }
-
-        // Comando: /stock
-        if (lower.includes('/stock') || lower.includes('vencimiento') || lower.includes('inventario')) {
-            return processStock(text);
-        }
-
-        return null; // No es comando local, ir a API
-    }
-
-    function processCopago(text) {
-        const lower = text.toLowerCase();
-
-        // Detectar obra social
-        let obra = null;
-        for (const [key, data] of Object.entries(FARMAIA_DB.obrasSociales)) {
-            if (lower.includes(key.toLowerCase()) || lower.includes(data.nombre.toLowerCase())) {
-                obra = data;
-                break;
-            }
-        }
-
-        if (!obra) {
-            return `🧮 <strong>Calculadora de Copagos</strong><br><br>
-¿Con qué obra social querés calcular? Las que tengo cargadas son:<br>
-${Object.values(FARMAIA_DB.obrasSociales).map(o => `• ${o.nombre} — ${o.tipo}`).join('<br>')}<br><br>
-Escribí: "Calcular copago OSDE para Atorvastatina 20mg"`;
-        }
-
-        // Detectar medicamento (simplificado)
-        let medicamento = 'Medicamento genérico';
-        const meds = ['ATORVASTATINA', 'METFORMINA', 'ENALAPRIL', 'AMLODIPINA', 'LOSARTAN', 
-                      'OMEPRAZOL', 'IBUPROFENO', 'PARACETAMOL', 'AZITROMICINA', 'CLARITROMICINA'];
-        for (const med of meds) {
-            if (lower.includes(med.toLowerCase())) {
-                medicamento = med;
-                break;
-            }
-        }
-
-        // Detectar precio (simulado si no se da)
-        let precio = 15000;
-        const numbers = text.match(/\$?\d+[.,]?\d*/);
-        if (numbers) {
-            precio = parseFloat(numbers[0].replace(/[.,]/g, ''));
-        }
-
-        const copago = precio * obra.copago;
-        const pacientePaga = obra.copago === 0 ? 0 : copago;
-        const obraSocialPaga = precio - pacientePaga;
-
-        let result = `🧮 <strong>Copago — ${obra.nombre}</strong><br><br>`;
-        result += `<div class="data-row"><span class="data-label">Medicamento:</span><span class="data-value">${medicamento}</span></div>`;
-        result += `<div class="data-row"><span class="data-label">Precio de lista:</span><span class="data-value">$${precio.toLocaleString('es-AR')}</span></div>`;
-        result += `<div class="data-row"><span class="data-label">Copago (${obra.tipo}):</span><span class="data-value">$${pacientePaga.toLocaleString('es-AR')}</span></div>`;
-        result += `<div class="data-row"><span class="data-label">Cubre obra social:</span><span class="data-value">$${obraSocialPaga.toLocaleString('es-AR')}</span></div>`;
-
-        if (obra.descuentoDiscapacidad > 0) {
-            const conDiscapacidad = precio * (1 - obra.descuentoDiscapacidad);
-            result += `<div class="data-row"><span class="data-label">Con discapacidad (70% dto):</span><span class="data-value">$${conDiscapacidad.toLocaleString('es-AR')}</span></div>`;
-        }
-
-        result += `<br><span class="badge badge-green">✓ Cálculo estimado</span><br><br>`;
-        result += `<em style="color: var(--text-muted); font-size: 0.85rem;">${obra.notas}</em>`;
-
-        return result;
-    }
-
-    function processInteracciones(text) {
-        const lower = text.toLowerCase();
-        const meds = [];
-
-        // Extraer medicamentos mencionados
-        const allMeds = Object.keys(FARMAIA_DB.interacciones);
-        for (const med of allMeds) {
-            if (lower.includes(med.toLowerCase())) {
-                meds.push(med);
-            }
-        }
-
-        if (meds.length < 2) {
-            return `⚡ <strong>Detector de Interacciones</strong><br><br>
-Mencioná al menos 2 medicamentos para verificar interacciones.<br><br>
-Ejemplos:<br>
-• "¿Hay interacción entre Warfarina y Aspirina?"<br>
-• "Interacciones: Metformina, Enalapril, Ibuprofeno"<br><br>
-Medicamentos en base:<br>
-${allMeds.join(', ')}`;
-        }
-
-        let result = `⚡ <strong>Análisis de Interacciones</strong><br><br>`;
-        result += `Medicamentos detectados: <strong>${meds.join(', ')}</strong><br><br>`;
-
-        let foundInteraction = false;
-        for (let i = 0; i < meds.length; i++) {
-            for (let j = i + 1; j < meds.length; j++) {
-                const med1 = meds[i];
-                const med2 = meds[j];
-
-                const data1 = FARMAIA_DB.interacciones[med1];
-                const data2 = FARMAIA_DB.interacciones[med2];
-
-                if (data1 && (data1.antagonistas.includes(med2) || data1.potenciadores.includes(med2))) {
-                    foundInteraction = true;
-                    const isPotenciador = data1.potenciadores.includes(med2);
-                    result += `<span class="badge badge-red">⚠️ INTERACCIÓN ${data1.riesgo}</span><br>`;
-                    result += `<strong>${med1} + ${med2}:</strong><br>`;
-                    result += `${data1.descripcion}<br><br>`;
-                }
-
-                if (data2 && (data2.antagonistas.includes(med1) || data2.potenciadores.includes(med1))) {
-                    if (!foundInteraction || !result.includes(`${med1} + ${med2}`)) {
-                        foundInteraction = true;
-                        result += `<span class="badge badge-red">⚠️ INTERACCIÓN ${data2.riesgo}</span><br>`;
-                        result += `<strong>${med2} + ${med1}:</strong><br>`;
-                        result += `${data2.descripcion}<br><br>`;
-                    }
-                }
-            }
-        }
-
-        if (!foundInteraction) {
-            result += `<span class="badge badge-green">✓ Sin interacciones críticas detectadas</span><br><br>`;
-            result += `No se encontraron interacciones conocidas entre los medicamentos indicados en la base local. De todos modos, siempre consultá el vademécum completo para casos especiales.`;
-        }
-
-        return result;
-    }
-
-    function processValidacion(text) {
-        return `📄 <strong>Validador de Receta Electrónica</strong><br><br>
-<span class="badge badge-yellow">🔄 Simulación</span><br><br>
-Para validar una receta real, necesito que:<br>
-1. Subas el PDF o imagen de la receta<br>
-2. Indiques la obra social del paciente<br>
-3. Confirme los datos del prescriptor<br><br>
-<strong>Verificación automática:</strong><br>
-• Firma digital del médico<br>
-• Vigencia (30 días)<br>
-• Cobertura con obra social<br>
-• Medicamentos en vademécum<br><br>
-Escribí: "Validar receta: [descripción]" o subí el archivo.`;
-    }
-
-    function processVademecum(text) {
-        const lower = text.toLowerCase();
-        const meds = {
-            'ATORVASTATINA': { dosis: '10-80mg/día', indicacion: 'Dislipidemia, prevención cardiovascular', contraindicaciones: 'Embarazo, lactancia, enfermedad hepática activa' },
-            'METFORMINA': { dosis: '500-2000mg/día', indicacion: 'Diabetes tipo 2', contraindicaciones: 'Insuficiencia renal, acidosis, enfermedad hepática' },
-            'ENALAPRIL': { dosis: '5-40mg/día', indicacion: 'Hipertensión, insuficiencia cardíaca', contraindicaciones: 'Angioedema, embarazo, estenosis bilateral de arteria renal' },
-            'WARFARINA': { dosis: '2-10mg/día (ajustar por INR)', indicacion: 'Prevención de tromboembolismo', contraindicaciones: 'Sangrado activo, embarazo, hipersensibilidad' },
-            'AMIODARONA': { dosis: '200-400mg/día', indicacion: 'Arritmias ventriculares y supraventriculares', contraindicaciones: 'Bradicardia, bloqueo AV, tirotoxicosis' }
-        };
-
-        let found = null;
-        for (const [med, data] of Object.entries(meds)) {
-            if (lower.includes(med.toLowerCase())) {
-                found = { nombre: med, ...data };
-                break;
-            }
-        }
-
-        if (!found) {
-            return `📚 <strong>Vademécum FarmaIA</strong><br><br>
-Medicamentos disponibles en base local:<br>
-${Object.keys(meds).join(', ')}<br><br>
-Escribí: "Dosis de Atorvastatina" o "Indicaciones de Metformina"`;
-        }
-
-        return `📚 <strong>${found.nombre}</strong><br><br>
-<div class="data-row"><span class="data-label">Dosis habitual:</span><span class="data-value">${found.dosis}</span></div>
-<div class="data-row"><span class="data-label">Indicación:</span><span class="data-value">${found.indicacion}</span></div>
-<div class="data-row"><span class="data-label">Contraindicaciones:</span><span class="data-value">${found.contraindicaciones}</span></div>
-<br><span class="badge badge-yellow">⚠️ Consultar prospecto completo</span>`;
-    }
-
-    function processNormativa(text) {
-        const lower = text.toLowerCase();
-        let topic = null;
-
-        if (lower.includes('receta') || lower.includes('electronica')) topic = 'receta_electronica';
-        else if (lower.includes('trazabilidad')) topic = 'trazabilidad';
-        else if (lower.includes('controlado') || lower.includes('estupefaciente')) topic = 'medicamentos_controlados';
-
-        if (!topic) {
-            return `🏛️ <strong>Normativa ANMAT</strong><br><br>
-Temas disponibles:<br>
-• Receta electrónica<br>
-• Trazabilidad<br>
-• Medicamentos controlados<br><br>
-Escribí: "Normativa sobre receta electrónica"`;
-        }
-
-        const data = FARMAIA_DB.normativa[topic];
-        return `🏛️ <strong>${data.titulo}</strong><br><br>
-<div class="data-row"><span class="data-label">Norma:</span><span class="data-value">${data.norma}</span></div>
-<div class="data-row"><span class="data-label">Vigencia:</span><span class="data-value">${data.vigencia}</span></div>
-<br><strong>Requisitos clave:</strong><br>
-${data.requisitos.map(r => `• ${r}`).join('<br>')}`;
-    }
-
-    function processStock(text) {
-        return `📦 <strong>Control de Stock</strong><br><br>
-<span class="badge badge-yellow">🔄 Módulo en desarrollo</span><br><br>
-Para usar el control de stock, necesito que cargues tu inventario. Podés:<br><br>
-1. <strong>Manual:</strong> Escribí "Stock: Paracetamol 500mg, 50 unidades, vence 12/2026"<br>
-2. <strong>Importar:</strong> Subí un Excel con columnas: Medicamento, Cantidad, Vencimiento, Lote<br><br>
-Una vez cargado, te aviso:<br>
-• 🟢 Stock normal<br>
-• 🟡 Stock bajo (menos de 10 unidades)<br>
-• 🔴 Vencimiento próximo (menos de 3 meses)<br><br>
-¿Querés cargar tu inventario ahora?`;
-    }
-
-    // ===== API ANTHROPIC =====
-    async function callAnthropic(userMessage) {
-        const systemPrompt = `Sos FarmaIA, un asistente farmacéutico experto diseñado para farmacias argentinas. 
-
-REGLAS CRÍTICAS:
-1. NUNCA des consejos médicos que reemplacen al farmacéutico o médico.
-2. Siempre aclarás que sos una herramienta de apoyo y que la decisión final es del profesional matriculado.
-3. Usás datos de la base local cuando estén disponibles (copagos, interacciones, normativa).
-4. Para consultas médicas complejas, sugerís consultar al médico o farmacéutico.
-5. Respondés en español de Argentina, con tono profesional pero cercano.
-6. Si no sabés algo, lo admitís. No inventás datos.
-
-CONTEXTO ARGENTINA 2026:
-- Receta electrónica obligatoria desde enero 2025 (Decreto 345/2024 + Resolución 2214/2025)
-- PAMI: sin copago para jubilados
-- Obras sociales privadas: generalmente 40% copago
-- Medicamentos de alto costo requieren autorización previa
-- Trazabilidad ANMAT obligatoria para todos los medicamentos
-
-FORMATO DE RESPUESTA:
-- Usá emojis para destacar información clave
-- Separá datos en líneas claras
-- Destacá alertas y contraindicaciones
-- Incluí siempre una nota de descargo de responsabilidad médica`;
-
-        const messages = [
-            { role: 'system', content: systemPrompt },
-            ...conversationHistory.slice(-10), // últimas 10 interacciones
-            { role: 'user', content: userMessage }
-        ];
-
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': apiKey,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model: 'claude-3-5-sonnet-20241022',
-                max_tokens: 2000,
-                messages: messages
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Error en la API');
-        }
-
-        const data = await response.json();
-        return data.content[0].text;
-    }
-
-    // ===== UI HELPERS =====
-    function addUserMessage(text, animate = true) {
-        const container = document.getElementById('chatMessages');
-        const msg = document.createElement('div');
-        msg.className = 'msg msg-user';
-        msg.textContent = text;
-        if (!animate) msg.style.animation = 'none';
-        container.appendChild(msg);
-        scrollToBottom();
-    }
-
-    function addBotMessage(html, animate = true) {
-        const container = document.getElementById('chatMessages');
-        const msg = document.createElement('div');
-        msg.className = 'msg msg-bot';
-        msg.innerHTML = html;
-        if (!animate) msg.style.animation = 'none';
-        container.appendChild(msg);
-        scrollToBottom();
-    }
-
-    function showTyping() {
-        document.getElementById('typingIndicator').classList.add('active');
-        scrollToBottom();
-    }
-
-    function hideTyping() {
-        document.getElementById('typingIndicator').classList.remove('active');
-    }
-
-    function scrollToBottom() {
-        const container = document.getElementById('chatMessages');
-        container.scrollTop = container.scrollHeight;
-    }
-
-    function saveToHistory(role, content) {
-        conversationHistory.push({ role, content });
-        if (conversationHistory.length > 50) {
-            conversationHistory = conversationHistory.slice(-50);
-        }
-        sessionStorage.setItem('farmaia_history', JSON.stringify(conversationHistory));
-    }
-
-    // ===== FAQ TOGGLE =====
-    function toggleFaq(element) {
-        const item = element.parentElement;
-        item.classList.toggle('open');
-        const toggle = element.querySelector('.toggle');
-        toggle.textContent = item.classList.contains('open') ? '−' : '+';
-    }
-    </script>
-
+      } catch (err) {
+        alert('No se pudo enviar. Probá de nuevo o escribinos por WhatsApp.');
+      } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
+</script>
 </body>
 </html>
