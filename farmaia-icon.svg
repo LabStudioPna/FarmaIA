@@ -1,0 +1,51 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111A2A"/>
+      <stop offset="1" stop-color="#0A101C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#14B8A6" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#14B8A6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cross" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5EEAD4"/>
+      <stop offset="1" stop-color="#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="capA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FBBF24"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+    <clipPath id="capClip">
+      <rect x="-42" y="-18" width="84" height="36" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- fondo app-icon -->
+  <rect x="2" y="2" width="188" height="188" rx="42" fill="url(#bg)" stroke="#1F2C40" stroke-width="3"/>
+  <rect x="2" y="2" width="188" height="188" rx="42" fill="url(#glow)"/>
+
+  <!-- cruz de farmacia -->
+  <g fill="url(#cross)">
+    <rect x="67" y="34" width="36" height="102" rx="11"/>
+    <rect x="34" y="67" width="102" height="36" rx="11"/>
+  </g>
+  <!-- brillo sutil de la cruz -->
+  <rect x="67" y="34" width="36" height="102" rx="11" fill="#EAF0F8" opacity="0.10"
+        transform="translate(-3,-3)"/>
+
+  <!-- cápsula -->
+  <g transform="translate(127,127) rotate(45)">
+    <g clip-path="url(#capClip)">
+      <rect x="-42" y="-18" width="42" height="36" fill="#EAF0F8"/>
+      <rect x="0" y="-18" width="42" height="36" fill="url(#capA)"/>
+      <line x1="0" y1="-18" x2="0" y2="18" stroke="#0A101C" stroke-width="3"/>
+      <ellipse cx="-24" cy="-9" rx="12" ry="5" fill="#FFFFFF" opacity="0.55"/>
+    </g>
+    <rect x="-42" y="-18" width="84" height="36" rx="18" fill="none" stroke="#0A101C" stroke-width="4"/>
+  </g>
+
+  <!-- chispa IA -->
+  <path d="M148 32 l4.2 10.8 L163 47 l-10.8 4.2 L148 62 l-4.2-10.8 L133 47 l10.8-4.2 Z" fill="#F59E0B"/>
+  <path d="M164 62 l2.2 5.6 L172 70 l-5.8 2.4 L164 78 l-2.2-5.6 L156 70 l5.8-2.4 Z" fill="#FBBF24" opacity="0.85"/>
+</svg>
